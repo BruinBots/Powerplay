@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -37,6 +38,7 @@ public class Karen  {
 
         // arm assembly
         DcMotorEx armMotor = map.get(DcMotorEx.class, "armMotor");
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Servo clawServo = map.get(Servo.class, "clawServo");
 
 
@@ -68,10 +70,10 @@ public class Karen  {
 
 
         // setting motor power and scaling down to preference
-        leftFrontMotor.setPower((wheelSpeeds[0] * scaleFactor) * (wheelSpeeds[0] * scaleFactor));
-        rightFrontMotor.setPower((wheelSpeeds[1] * scaleFactor) * (wheelSpeeds[1] * scaleFactor));
-        leftBackMotor.setPower((wheelSpeeds[2] * scaleFactor) * (wheelSpeeds[2] * scaleFactor));
-        rightBackMotor.setPower((wheelSpeeds[3] * scaleFactor) * (wheelSpeeds[3] * scaleFactor));
+        leftFrontMotor.setPower(wheelSpeeds[0] * scaleFactor);
+        rightFrontMotor.setPower(wheelSpeeds[1] * scaleFactor);
+        leftBackMotor.setPower(wheelSpeeds[2] * scaleFactor);
+        rightBackMotor.setPower(wheelSpeeds[3] * scaleFactor);
 
     }
 

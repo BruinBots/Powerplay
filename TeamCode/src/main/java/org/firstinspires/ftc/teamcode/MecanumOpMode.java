@@ -72,6 +72,8 @@ public class MecanumOpMode extends OpMode
         strafe = gamepad1.left_stick_x * 0.5;
         turn = gamepad1.right_stick_x * 0.5;
 
+        bot.moveBot(drive, turn, strafe, 0.5);
+
 
 //        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
 //        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
