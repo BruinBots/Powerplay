@@ -30,18 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 
-@TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
+@TeleOp(name="Click this op mode charlie", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode
 {
     // Declare OpMode members.
@@ -49,6 +41,9 @@ public class MecanumOpMode extends OpMode
     double drive = 0.0;
     double turn = 0.0;
     double strafe = 0.0;
+
+    double armPower = 0.0;
+    double clawPos = 0.0;
 
     Karen bot;
 
@@ -77,10 +72,28 @@ public class MecanumOpMode extends OpMode
         strafe = gamepad1.left_stick_x * 0.5;
         turn = gamepad1.right_stick_x * 0.5;
 
-        bot.moveBot(drive, turn, strafe, 0.3);
 
-        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
-        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
+//        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
+//        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
+
+        if(gamepad1.dpad_up)
+            armPower = -0.2;
+        else if(gamepad1.dpad_down)
+            armPower = 0.2;
+        else
+            armPower = 0.0;
+
+        if(gamepad1.right_bumper)
+            clawPos += 0.001;
+        if(gamepad1.left_bumper)
+            clawPos -= 0.001;
+
+
+        bot.armMotor.setPower(armPower);
+        bot.clawServo.setPosition(clawPos);
+
+        telemetry.addData("Servo: ", clawPos);
+        telemetry.addData("arm: ", armPower);
     }
 
 

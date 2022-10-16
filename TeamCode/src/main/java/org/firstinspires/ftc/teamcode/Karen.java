@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Karen  {
 
@@ -14,6 +15,9 @@ public class Karen  {
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
+
+    public DcMotorEx armMotor;
+    public Servo clawServo;
 
     public DigitalChannel leftFrontSwitch;
     public DigitalChannel rightFrontSwitch;
@@ -31,10 +35,14 @@ public class Karen  {
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        // arm assembly
+        DcMotorEx armMotor = map.get(DcMotorEx.class, "armMotor");
+        Servo clawServo = map.get(Servo.class, "clawServo");
+
 
         // Front Switches
-        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+//        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+//        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -60,10 +68,10 @@ public class Karen  {
 
 
         // setting motor power and scaling down to preference
-        leftFrontMotor.setPower(wheelSpeeds[0] * scaleFactor);
-        rightFrontMotor.setPower(wheelSpeeds[1] * scaleFactor);
-        leftBackMotor.setPower(wheelSpeeds[2] * scaleFactor);
-        rightBackMotor.setPower(wheelSpeeds[3] * scaleFactor);
+        leftFrontMotor.setPower((wheelSpeeds[0] * scaleFactor) * (wheelSpeeds[0] * scaleFactor));
+        rightFrontMotor.setPower((wheelSpeeds[1] * scaleFactor) * (wheelSpeeds[1] * scaleFactor));
+        leftBackMotor.setPower((wheelSpeeds[2] * scaleFactor) * (wheelSpeeds[2] * scaleFactor));
+        rightBackMotor.setPower((wheelSpeeds[3] * scaleFactor) * (wheelSpeeds[3] * scaleFactor));
 
     }
 
