@@ -79,9 +79,9 @@ public class MecanumOpMode extends OpMode
 //        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
         if(gamepad1.dpad_up)
-            armPower = -0.2;
+            armPower = -0.5;
         else if(gamepad1.dpad_down)
-            armPower = 0.2;
+            armPower = 0.5;
         else
             armPower = 0.0;
 
