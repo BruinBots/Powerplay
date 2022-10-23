@@ -34,8 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Click this op mode charlie", group="Iterative Opmode")
-public class MecanumOpMode extends OpMode
-{
+public class MecanumOpMode extends OpMode {
     // Declare OpMode members.
 
     double drive = 0.0;
@@ -45,6 +44,8 @@ public class MecanumOpMode extends OpMode
     double armPower = 0.0;
     double clawPos = 0.0;
 
+    int armPos;
+
     Karen bot;
 
     //
@@ -53,11 +54,13 @@ public class MecanumOpMode extends OpMode
 
         bot = new Karen(hardwareMap);
         telemetry.addData("Status", "Initialized");
+        armPos = bot.armMotor.getCurrentPosition();
     }
 
     //
     @Override
     public void init_loop() {
+        armPos = bot.armMotor.getCurrentPosition();
     }
 
     //
@@ -78,31 +81,62 @@ public class MecanumOpMode extends OpMode
 //        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
 //        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
-        if(gamepad1.dpad_up)
+        if (gamepad1.dpad_up)
             armPower = -0.2;
-        else if(gamepad1.dpad_down)
+        else if (gamepad1.dpad_down)
             armPower = 0.2;
         else
             armPower = 0.0;
 
-        if(gamepad1.right_bumper)
-            clawPos += 0.001;
-        if(gamepad1.left_bumper)
-            clawPos -= 0.001;
+        if (gamepad1.right_bumper)
+            clawPos = Karen.CLAW_OPEN;
+        if (gamepad1.left_bumper)
+            clawPos = Karen.CLAW_CLOSED;
+
+        //arm -----------------
+        if (gamepad1.dpad_down) { // arm down
+            armPos -= 12; // positive due to motor rotation flipped
+            // Lowest arm can go for safety,
+            if (armPos > Karen.MIN_ARM_POSITION){ // 40
+                armPos = Karen.MIN_ARM_POSITION;
+            }
+
+            bot.moveArm(armPos);
+            armPos = bot.getCurrentArmPos();
+            telemetry.addData("arm down", "");
+        } else if (gamepad1.dpad_up) {
+            armPos += 12;
+
+            if(armPos < Karen.MAX_ARM_POSITION){ // -365
+                armPos = Karen.MAX_ARM_POSITION;
+            }
+
+            bot.moveArm(armPos);
+            armPos = bot.getCurrentArmPos();
+            telemetry.addData("arm up", "");
+        } else {
+            bot.moveArm(armPos);
+            telemetry.addData("arm still", "");
+        }
 
 
-        bot.armMotor.setPower(armPower);
         bot.clawServo.setPosition(clawPos);
 
         telemetry.addData("Servo: ", clawPos);
-        telemetry.addData("arm: ", armPower);
+        telemetry.addData("armPos:", bot.getCurrentArmPos());
+
+
     }
 
 
     @Override
     public void stop() {
+        bot.stop();
     }
 
-
-
 }
+
+
+
+
+

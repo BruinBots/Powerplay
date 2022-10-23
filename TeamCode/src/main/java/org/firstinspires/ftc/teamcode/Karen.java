@@ -23,23 +23,32 @@ public class Karen  {
     public DigitalChannel leftFrontSwitch;
     public DigitalChannel rightFrontSwitch;
 
+    public static int MAX_ARM_POSITION = 160;
+    public static int MIN_ARM_POSITION = 0;
+
+    public static double CLAW_OPEN = 0.66;
+    public static double CLAW_CLOSED = 0.0;
+
+    public static double ARM_POWER = 0.7;
+
     //
 
     // constructor with map
     public Karen (HardwareMap map) {
         // Drivetrain Motors
-        DcMotorEx leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
-        DcMotorEx rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
-        DcMotorEx leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
-        DcMotorEx rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
+        leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
+        rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
+        leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
+        rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
 
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // arm assembly
-        DcMotorEx armMotor = map.get(DcMotorEx.class, "armMotor");
+        armMotor = map.get(DcMotorEx.class, "armMotor");
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Servo clawServo = map.get(Servo.class, "clawServo");
+        armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        clawServo = map.get(Servo.class, "clawServo");
 
 
         // Front Switches
@@ -77,10 +86,22 @@ public class Karen  {
 
     }
 
+    public void moveArm(int targetPos){
+        armMotor.setTargetPosition(targetPos);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setPower(ARM_POWER);
+    }
+
+    public int getCurrentArmPos(){
+        return armMotor.getCurrentPosition();
+    }
+
     public void stop(){
         leftFrontMotor.setPower(0);
         leftBackMotor.setPower(0);
         rightFrontMotor.setPower(0);
         rightBackMotor.setPower(0);
+
+        armMotor.setPower(0);
     }
 }
