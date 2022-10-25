@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Karen  {
+public class BigBob {
 
 
     // Class variables
@@ -21,7 +20,7 @@ public class Karen  {
     //
 
     // constructor with map
-    public Karen (HardwareMap map) {
+    public BigBob(HardwareMap map) {
         // Drivetrain Motors
         DcMotorEx leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
         DcMotorEx rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");

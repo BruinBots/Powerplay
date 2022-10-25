@@ -30,16 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 
 @TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode
@@ -50,13 +42,13 @@ public class MecanumOpMode extends OpMode
     double turn = 0.0;
     double strafe = 0.0;
 
-    Karen bot;
+    BigBob bot;
 
     //
     @Override
     public void init() {
 
-        bot = new Karen(hardwareMap);
+        bot = new BigBob(hardwareMap);
         telemetry.addData("Status", "Initialized");
     }
 
