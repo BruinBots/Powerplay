@@ -72,7 +72,7 @@ public class MecanumOpMode extends OpMode
         turn = gamepad1.right_stick_x * 0.5;
 
         bot.moveBot(drive, turn, strafe, 0.3);
-
+ 
         // Linear Slide Code
         if (gamepad1.dpad_up) {
             linearSlide = 1;
