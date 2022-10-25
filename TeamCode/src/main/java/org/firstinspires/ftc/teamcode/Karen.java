@@ -15,8 +15,8 @@ public class Karen  {
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
 
-    public DigitalChannel leftFrontSwitch;
-    public DigitalChannel rightFrontSwitch;
+//    public DigitalChannel leftFrontSwitch;
+//    public DigitalChannel rightFrontSwitch;
 
     //
 
@@ -33,8 +33,8 @@ public class Karen  {
 
 
         // Front Switches
-        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+//        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+//        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
