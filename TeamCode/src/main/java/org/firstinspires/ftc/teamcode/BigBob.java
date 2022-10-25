@@ -13,6 +13,7 @@ public class BigBob {
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
+    public DcMotorEx linearSlide;
 
 //    public DigitalChannel leftFrontSwitch;
 //    public DigitalChannel rightFrontSwitch;
@@ -26,7 +27,7 @@ public class BigBob {
         DcMotorEx rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
         DcMotorEx leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         DcMotorEx rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
-
+        DcMotorEx linearSlide = map.get(DcMotorEx.class, "linearSlide");
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -63,7 +64,6 @@ public class BigBob {
         rightFrontMotor.setPower(wheelSpeeds[1] * scaleFactor);
         leftBackMotor.setPower(wheelSpeeds[2] * scaleFactor);
         rightBackMotor.setPower(wheelSpeeds[3] * scaleFactor);
-
     }
 
     public void stop(){
