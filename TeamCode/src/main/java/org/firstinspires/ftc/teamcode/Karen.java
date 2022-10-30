@@ -25,9 +25,9 @@ public class Karen  {
     public static int MIN_ARM_POSITION = 0;
 
     public static double CLAW_OPEN = 0.66;
-    public static double CLAW_CLOSED = 0.0;
+    public static double CLAW_CLOSED = 0.1;
 
-    public static double ARM_POWER = 0.7;
+    public static double ARM_POWER = 0.5;
 
     //
 

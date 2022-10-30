@@ -81,12 +81,6 @@ public class MecanumOpMode extends OpMode {
 //        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
 //        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
-        if(gamepad1.dpad_up)
-            armPower = -0.5;
-        else if(gamepad1.dpad_down)
-            armPower = 0.5;
-        else
-            armPower = 0.0;
 
         if (gamepad1.right_bumper)
             clawPos = Karen.CLAW_OPEN;
@@ -95,9 +89,9 @@ public class MecanumOpMode extends OpMode {
 
         //arm -----------------
         if (gamepad1.dpad_down) { // arm down
-            armPos -= 12; // positive due to motor rotation flipped
+            armPos -= 10; // positive due to motor rotation flipped
             // Lowest arm can go for safety,
-            if (armPos > Karen.MIN_ARM_POSITION){ // 40
+            if (armPos < Karen.MIN_ARM_POSITION){ // 40
                 armPos = Karen.MIN_ARM_POSITION;
             }
 
@@ -105,9 +99,9 @@ public class MecanumOpMode extends OpMode {
             armPos = bot.getCurrentArmPos();
             telemetry.addData("arm down", "");
         } else if (gamepad1.dpad_up) {
-            armPos += 12;
+            armPos += 10;
 
-            if(armPos < Karen.MAX_ARM_POSITION){ // -365
+            if(armPos > Karen.MAX_ARM_POSITION){ // -365
                 armPos = Karen.MAX_ARM_POSITION;
             }
 
