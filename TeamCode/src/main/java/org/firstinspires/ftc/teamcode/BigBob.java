@@ -17,7 +17,7 @@ public class BigBob {
     public DcMotorEx linearSlideMotor;
 
 
-    public static int MAX_LINEAR_SLIDE_POSITON = 1;
+    public static int MAX_LINEAR_SLIDE_POSITON = 75;
     public static int MIN_LINEAR_SLIDE_POSITION = 0;
 
     public static double LINEAR_SLIDE_POWER = 0.2;
@@ -84,8 +84,8 @@ public class BigBob {
         rightBackMotor.setPower(0);
     }
 
-    public void moveLinearSlide(int distance) {
-        linearSlideMotor.setTargetPosition(distance);
+    public void moveLinearSlide(int ticks) {
+        linearSlideMotor.setTargetPosition(ticks);
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
 

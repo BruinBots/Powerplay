@@ -71,17 +71,21 @@ public class MecanumOpMode extends OpMode
         strafe = gamepad1.left_stick_x * 0.5;
         turn = gamepad1.right_stick_x * 0.5;
 
-        bot.moveBot(drive, turn, strafe, 0.3);
+//        bot.moveBot(drive, turn, strafe, 0.3);
 
         // Linear Slide Code
         if (gamepad1.dpad_up) {
             linearSlide += 1;
         }
         else if (gamepad1.dpad_down) {
-            linearSlide -= -1;
+            linearSlide -= 1;
         }
-        else {
-//            linearSlide = 0;
+
+        if (linearSlide > BigBob.MAX_LINEAR_SLIDE_POSITON) {
+            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITON;
+        }
+        else if (linearSlide < BigBob.MIN_LINEAR_SLIDE_POSITION) {
+            linearSlide = BigBob.MIN_LINEAR_SLIDE_POSITION;
         }
 
         bot.moveLinearSlide(linearSlide);
