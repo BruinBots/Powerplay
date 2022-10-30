@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class BigBob {
 
@@ -17,10 +21,11 @@ public class BigBob {
     public DcMotorEx linearSlideMotor;
 
 
-    public static int MAX_LINEAR_SLIDE_POSITON = 75;
-    public static int MIN_LINEAR_SLIDE_POSITION = 0;
 
-    public static double LINEAR_SLIDE_POWER = 0.2;
+    public static final int MAX_LINEAR_SLIDE_POSITON = 75;
+    public static final int MIN_LINEAR_SLIDE_POSITION = 0;
+
+    public static final double LINEAR_SLIDE_POWER = 0.1;
 
 //    public DigitalChannel leftFrontSwitch;
 //    public DigitalChannel rightFrontSwitch;
@@ -30,14 +35,15 @@ public class BigBob {
     // constructor with map
     public BigBob(HardwareMap map) {
         // Drivetrain Motors
-        DcMotorEx leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
-        DcMotorEx rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
-        DcMotorEx leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
-        DcMotorEx rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
+        leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
+        rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
+        leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
+        rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
 
-        DcMotorEx linearSlideMotor = map.get(DcMotorEx.class, "linearSlide");
+        linearSlideMotor = map.get(DcMotorEx.class, "linearSlide");
         linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        linearSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -86,8 +92,14 @@ public class BigBob {
 
     public void moveLinearSlide(int ticks) {
         linearSlideMotor.setTargetPosition(ticks);
-        linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
 
+       /* if (linearSlideMotor.getCurrentPosition() > BigBob.MAX_LINEAR_SLIDE_POSITON) {
+            linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
+        }
+        else if (linearSlideMotor.getCurrentPosition() < BigBob.MIN_LINEAR_SLIDE_POSITION) {
+            linearSlideMotor.setPower(0);
+        }*/
+        linearSlideMotor.setPower(-.1);
+        linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }

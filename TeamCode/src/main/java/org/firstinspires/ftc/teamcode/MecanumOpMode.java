@@ -30,6 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -71,24 +75,26 @@ public class MecanumOpMode extends OpMode
         strafe = gamepad1.left_stick_x * 0.5;
         turn = gamepad1.right_stick_x * 0.5;
 
-//        bot.moveBot(drive, turn, strafe, 0.3);
+        bot.moveBot(drive, turn, strafe, 0.3);
 
-        // Linear Slide Code
+        // Linear Slide Code`
         if (gamepad1.dpad_up) {
-            linearSlide += 1;
-        }
-        else if (gamepad1.dpad_down) {
             linearSlide -= 1;
         }
+        else if (gamepad1.dpad_down) {
+            linearSlide += 1;
+        }
 
-        if (linearSlide > BigBob.MAX_LINEAR_SLIDE_POSITON) {
-            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITON;
-        }
-        else if (linearSlide < BigBob.MIN_LINEAR_SLIDE_POSITION) {
-            linearSlide = BigBob.MIN_LINEAR_SLIDE_POSITION;
-        }
+        telemetry.addData("linearSlide", linearSlide);
+        telemetry.addData("encoder", bot.linearSlideMotor.getCurrentPosition());
+        telemetry.update();
 
         bot.moveLinearSlide(linearSlide);
+        try {
+            sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
        // telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
