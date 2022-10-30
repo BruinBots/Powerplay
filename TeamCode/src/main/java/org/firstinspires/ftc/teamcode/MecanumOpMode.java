@@ -75,13 +75,13 @@ public class MecanumOpMode extends OpMode
 
         // Linear Slide Code
         if (gamepad1.dpad_up) {
-            linearSlide = 1;
+            linearSlide += 1;
         }
         else if (gamepad1.dpad_down) {
-            linearSlide = -1;
+            linearSlide -= -1;
         }
         else {
-            linearSlide = 0;
+//            linearSlide = 0;
         }
 
         bot.moveLinearSlide(linearSlide);
