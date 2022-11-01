@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class BigBob {
 
@@ -18,14 +15,18 @@ public class BigBob {
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
+
     public DcMotorEx linearSlideMotor;
+    public Servo clawServo;
 
+    public static final int CLAW_OPEN = 60;
+    public static final int CLAW_CLOSED = 0;
 
+    public static final int MAX_LINEAR_SLIDE_POSITON = 1960;
+    public static final int MIN_LINEAR_SLIDE_POSITION = -1960;
 
-    public static final int MAX_LINEAR_SLIDE_POSITON = 75;
-    public static final int MIN_LINEAR_SLIDE_POSITION = 0;
-
-    public static final double LINEAR_SLIDE_POWER = 0.1;
+    public static final double LINEAR_SLIDE_POWER = 0.2;
+    public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
 //    public DigitalChannel leftFrontSwitch;
 //    public DigitalChannel rightFrontSwitch;
@@ -44,6 +45,8 @@ public class BigBob {
         linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        linearSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        clawServo = map.get(Servo.class, "clawServo");
 
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -92,14 +95,18 @@ public class BigBob {
 
     public void moveLinearSlide(int ticks) {
         linearSlideMotor.setTargetPosition(ticks);
-
-       /* if (linearSlideMotor.getCurrentPosition() > BigBob.MAX_LINEAR_SLIDE_POSITON) {
+        if (ticks > 0) {
             linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
         }
-        else if (linearSlideMotor.getCurrentPosition() < BigBob.MIN_LINEAR_SLIDE_POSITION) {
-            linearSlideMotor.setPower(0);
-        }*/
-        linearSlideMotor.setPower(-.1);
+        else {
+            linearSlideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
+        }
+//        if (linearSlideMotor.getCurrentPosition() > BigBob.MAX_LINEAR_SLIDE_POSITON) {
+//            linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
+//        }
+//        else if (linearSlideMotor.getCurrentPosition() < BigBob.MIN_LINEAR_SLIDE_POSITION) {
+//            linearSlideMotor.setPower(0);
+//        }
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }

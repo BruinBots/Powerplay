@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode;
 
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITON;
+import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
 
 import static java.lang.Thread.sleep;
 
@@ -47,6 +49,7 @@ public class MecanumOpMode extends OpMode
     double strafe = 0.0;
 
     int linearSlide = 0;
+    double clawPos = 30;
 
     BigBob bot;
 
@@ -71,25 +74,50 @@ public class MecanumOpMode extends OpMode
     //
     @Override
     public void loop() {
-        drive = -gamepad1.left_stick_y * 0.5;
-        strafe = gamepad1.left_stick_x * 0.5;
-        turn = gamepad1.right_stick_x * 0.5;
+        drive = -gamepad1.left_stick_y * -0.5;
+        strafe = gamepad1.left_stick_x * -0.5;
+        turn = gamepad1.right_stick_x * -0.5;
 
         bot.moveBot(drive, turn, strafe, 0.3);
 
         // Linear Slide Code`
         if (gamepad1.dpad_up) {
-            linearSlide -= 1;
+            linearSlide += 10;
         }
         else if (gamepad1.dpad_down) {
-            linearSlide += 1;
+            linearSlide -= 10;
+        }
+        else if (gamepad1.y) {
+            linearSlide = MAX_LINEAR_SLIDE_POSITON;
+        }
+        else if (gamepad1.a) {
+            linearSlide = 0;
         }
 
-        telemetry.addData("linearSlide", linearSlide);
-        telemetry.addData("encoder", bot.linearSlideMotor.getCurrentPosition());
+        if (linearSlide > MAX_LINEAR_SLIDE_POSITON) {
+            linearSlide = MAX_LINEAR_SLIDE_POSITON;
+        }
+        else if (linearSlide < MIN_LINEAR_SLIDE_POSITION) {
+            linearSlide = MIN_LINEAR_SLIDE_POSITION;
+        }
+
+        if (gamepad1.dpad_right) {
+            clawPos += 1;
+        }
+        else if (gamepad1.dpad_left) {
+            clawPos -= 1;
+        }
+
+        bot.clawServo.setPosition(clawPos);
+
+        telemetry.addData("linearSlideMotor", linearSlide);
+        telemetry.addData("linearSlideEncoder", bot.linearSlideMotor.getCurrentPosition());
+        telemetry.addData("clawServoExpected", clawPos);
+        telemetry.addData("clawServo", bot.clawServo.getPosition());
         telemetry.update();
 
         bot.moveLinearSlide(linearSlide);
+
         try {
             sleep(20);
         } catch (InterruptedException e) {
