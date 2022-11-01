@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.checkerframework.checker.index.qual.LTEqLengthOf;
+
+import java.util.Base64;
+
 public class Karen  {
     // Class variables
 
@@ -21,13 +25,18 @@ public class Karen  {
     public DigitalChannel leftFrontSwitch;
     public DigitalChannel rightFrontSwitch;
 
+    public DigitalChannel leftOdoWheel;
+
     public static int MAX_ARM_POSITION = 160;
     public static int MIN_ARM_POSITION = 0;
 
     public static double CLAW_OPEN = 0.66;
-    public static double CLAW_CLOSED = 0.1;
+    public static double CLAW_CLOSED = 0.04;
 
-    public static double ARM_POWER = 0.5;
+    public static double ARM_POWER = 0.8;
+
+    public boolean leftSwitch;
+    public boolean rightSwitch;
 
     //
 
@@ -48,10 +57,25 @@ public class Karen  {
         armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");
 
+//        backOdoWheel = map.get(Encoder.class, );
+//        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
+//        rightOdoWheel =;
+
+        //left odo wheel
+        leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //right odo wheel
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // back odo wheel
+        leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Front Switches
-//        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-//        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -83,6 +107,33 @@ public class Karen  {
         rightBackMotor.setPower(wheelSpeeds[3] * scaleFactor);
 
     }
+
+    public String center() {
+
+
+        //true == switch activated
+        leftSwitch = !leftFrontSwitch.getState(); // reversed because of yes
+        rightSwitch = !rightFrontSwitch.getState(); // reversed because of yes
+
+            if (leftSwitch && !rightSwitch) { // turn left
+                this.moveBot(0, -0.2, 0, 1);
+                return "turning left";
+            } // right on
+            else if (!leftSwitch && rightSwitch) { //turn right
+                this.moveBot(0, 0.2, 0, 1);
+                return "turning right";
+            } // none on
+            else if (!leftSwitch && !rightSwitch) { // move forward
+                this.moveBot(0.2, 0, 0, 1);
+                return "moving forward";
+            } else if (leftSwitch && rightSwitch) { // break out
+                return "found!";
+            }
+
+            return "error";
+    }
+
+
 
     public void moveArm(int targetPos){
         armMotor.setTargetPosition(targetPos);

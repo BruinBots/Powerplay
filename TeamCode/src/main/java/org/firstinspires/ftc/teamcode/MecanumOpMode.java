@@ -33,7 +33,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="Click this op mode charlie", group="Iterative Opmode")
+@TeleOp(name="charlie, pls click this op mode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode {
     // Declare OpMode members.
 
@@ -78,8 +78,8 @@ public class MecanumOpMode extends OpMode {
         bot.moveBot(drive, turn, strafe, 0.5);
 
 
-//        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
-//        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
+        telemetry.addData("Left Switch", !bot.leftFrontSwitch.getState());
+        telemetry.addData("Right Switch", !bot.rightFrontSwitch.getState());
 
 
         if (gamepad1.right_bumper)
@@ -114,11 +114,23 @@ public class MecanumOpMode extends OpMode {
         }
 
 
+        //hold to center
+        if(gamepad1.x){
+            telemetry.addData("", bot.center());
+        }
+
+
+
+
         bot.clawServo.setPosition(clawPos);
 
         telemetry.addData("Servo: ", clawPos);
         telemetry.addData("armPos:", bot.getCurrentArmPos());
 
+        telemetry.addData("leftOdo: ", bot.leftFrontMotor.getCurrentPosition());
+        telemetry.addData("rightOdo: ", bot.rightFrontMotor.getCurrentPosition());
+        telemetry.addData("backOdo: ", bot.leftBackMotor.getCurrentPosition());
+        telemetry.addData("leftMotor", bot.leftFrontMotor.getPower());
 
     }
 
