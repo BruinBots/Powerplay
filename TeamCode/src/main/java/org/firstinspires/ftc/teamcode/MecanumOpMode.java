@@ -49,7 +49,7 @@ public class MecanumOpMode extends OpMode
     double strafe = 0.0;
 
     int linearSlide = 0;
-    double clawPos = 30;
+    double clawPos = 0.0;
 
     BigBob bot;
 
@@ -102,10 +102,10 @@ public class MecanumOpMode extends OpMode
         }
 
         if (gamepad1.dpad_right) {
-            clawPos += 1;
+            clawPos += 0.05;
         }
         else if (gamepad1.dpad_left) {
-            clawPos -= 1;
+            clawPos -= 0.05;
         }
 
         bot.clawServo.setPosition(clawPos);
