@@ -78,8 +78,8 @@ public class MecanumOpMode extends OpMode {
         bot.moveBot(drive, turn, strafe, 0.5);
 
 
-        telemetry.addData("Left Switch", !bot.leftFrontSwitch.getState());
-        telemetry.addData("Right Switch", !bot.rightFrontSwitch.getState());
+        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
+        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
 
         if (gamepad1.right_bumper)

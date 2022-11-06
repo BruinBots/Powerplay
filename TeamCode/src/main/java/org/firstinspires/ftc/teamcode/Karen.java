@@ -112,8 +112,8 @@ public class Karen  {
 
 
         //true == switch activated
-        leftSwitch = !leftFrontSwitch.getState(); // reversed because of yes
-        rightSwitch = !rightFrontSwitch.getState(); // reversed because of yes
+        leftSwitch = leftFrontSwitch.getState(); // reversed because of yes
+        rightSwitch = rightFrontSwitch.getState(); // reversed because of yes
 
             if (leftSwitch && !rightSwitch) { // turn left
                 this.moveBot(0, -0.2, 0, 1);
@@ -123,9 +123,9 @@ public class Karen  {
                 this.moveBot(0, 0.2, 0, 1);
                 return "turning right";
             } // none on
-            else if (!leftSwitch && !rightSwitch) { // move forward
+            else if (!leftSwitch && !rightSwitch) { // do nothing
                 this.moveBot(0.2, 0, 0, 1);
-                return "moving forward";
+                return "moving forward!";
             } else if (leftSwitch && rightSwitch) { // break out
                 return "found!";
             }
