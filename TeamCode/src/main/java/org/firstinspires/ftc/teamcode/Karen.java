@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.checkerframework.checker.index.qual.LTEqLengthOf;
-
-import java.util.Base64;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 public class Karen  {
     // Class variables
@@ -18,6 +15,10 @@ public class Karen  {
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
+
+    public Encoder leftEncoder;
+    public Encoder rightEncoder;
+    public Encoder frontEncoder;
 
     public DcMotorEx armMotor;
     public Servo clawServo;
@@ -48,8 +49,13 @@ public class Karen  {
         leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
 
-        leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBackMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        // Encoders
+        leftEncoder = new Encoder(map.get(DcMotorEx.class, "leftFrontMotor"));
+        rightEncoder = new Encoder(map.get(DcMotorEx.class, "rightFrontMotor"));
+        leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
+        frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
         // arm assembly
         armMotor = map.get(DcMotorEx.class, "armMotor");

@@ -127,11 +127,19 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("Servo: ", clawPos);
         telemetry.addData("armPos:", bot.getCurrentArmPos());
 
-        telemetry.addData("leftOdo: ", bot.leftFrontMotor.getCurrentPosition());
-        telemetry.addData("rightOdo: ", bot.rightFrontMotor.getCurrentPosition());
-        telemetry.addData("backOdo: ", bot.leftBackMotor.getCurrentPosition());
-        telemetry.addData("leftMotor", bot.leftFrontMotor.getPower());
-
+        telemetry.addData("leftOdo: ", bot.leftEncoder.getCurrentPosition());
+        telemetry.addData("rightOdo: ", bot.rightEncoder.getCurrentPosition());
+        telemetry.addData("backOdo: ", bot.frontEncoder.getCurrentPosition());
+       // telemetry.addData("leftMotor", bot.leftFrontMotor.getPower());
+        telemetry.addData("leftEncoder", bot.leftEncoder.getCurrentPosition());
+        telemetry.addData("rightEncoder", bot.rightEncoder.getCurrentPosition());
+        telemetry.addData("frontEncoder", bot.frontEncoder.getCurrentPosition());
+        telemetry.addData("leftEncoderCorVel", bot.leftEncoder.getCorrectedVelocity());
+        telemetry.addData("rightEncoderCorVel", bot.rightEncoder.getCorrectedVelocity());
+        telemetry.addData("frontEncoderCorVel", bot.frontEncoder.getCorrectedVelocity());
+        telemetry.addData("leftEncoderRawVel", bot.leftEncoder.getRawVelocity());
+        telemetry.addData("rightEncoderRawVel", bot.rightEncoder.getRawVelocity());
+        telemetry.addData("frontEncoderRawVel", bot.frontEncoder.getRawVelocity());
     }
 
 
