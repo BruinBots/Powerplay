@@ -54,7 +54,7 @@ public class Karen  {
         // Encoders
         leftEncoder = new Encoder(map.get(DcMotorEx.class, "leftFrontMotor"));
         rightEncoder = new Encoder(map.get(DcMotorEx.class, "rightFrontMotor"));
-        leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
+        //leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
         // arm assembly
