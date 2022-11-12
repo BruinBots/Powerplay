@@ -31,6 +31,9 @@ package org.firstinspires.ftc.teamcode;
 
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.BigBob.CLAW_CLOSED;
+import static org.firstinspires.ftc.teamcode.BigBob.CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.BigBob.CLAW_ZERO_POSITION;
 import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITON;
 import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
 
@@ -38,6 +41,8 @@ import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 @TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode
@@ -49,7 +54,7 @@ public class MecanumOpMode extends OpMode
     double strafe = 0.0;
 
     int linearSlide = 0;
-    double clawPos = 0.0;
+    double clawPos = CLAW_ZERO_POSITION;
 
     BigBob bot;
 
@@ -101,11 +106,21 @@ public class MecanumOpMode extends OpMode
             linearSlide = MIN_LINEAR_SLIDE_POSITION;
         }
 
-        if (gamepad1.dpad_right) {
-            clawPos += 0.05;
+        if (gamepad1.dpad_right) { // open
+            if (clawPos < CLAW_OPEN) {
+                clawPos += 0.05;
+            }
+            if (clawPos > CLAW_OPEN) {
+                clawPos = CLAW_OPEN;
+            }
         }
-        else if (gamepad1.dpad_left) {
-            clawPos -= 0.05;
+        else if (gamepad1.dpad_left) { // close
+            if (clawPos > CLAW_CLOSED) {
+                clawPos -= 0.05;
+            }
+            if (clawPos < CLAW_CLOSED) {
+                clawPos = CLAW_CLOSED;
+            }
         }
 
         bot.clawServo.setPosition(clawPos);

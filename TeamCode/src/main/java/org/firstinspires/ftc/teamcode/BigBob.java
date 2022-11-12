@@ -19,8 +19,9 @@ public class BigBob {
     public DcMotorEx linearSlideMotor;
     public Servo clawServo;
 
-    public static final int CLAW_OPEN = 60;
-    public static final int CLAW_CLOSED = 0;
+    public static final double CLAW_OPEN = 0.7;
+    public static final double CLAW_CLOSED = 0.2;
+    public static final double CLAW_ZERO_POSITION = 0.4;
 
     public static final int MAX_LINEAR_SLIDE_POSITON = 2000;
     public static final int MIN_LINEAR_SLIDE_POSITION = 10;
