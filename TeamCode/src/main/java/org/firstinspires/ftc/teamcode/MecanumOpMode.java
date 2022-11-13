@@ -29,14 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-
-import static org.firstinspires.ftc.teamcode.BigBob.CLAW_CLOSED;
-import static org.firstinspires.ftc.teamcode.BigBob.CLAW_OPEN;
-import static org.firstinspires.ftc.teamcode.BigBob.CLAW_ZERO_POSITION;
-import static org.firstinspires.ftc.teamcode.BigBob.LOW_LINEAR_SLIDE_POSITION;
-import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITON;
-import static org.firstinspires.ftc.teamcode.BigBob.MEDIUM_LINEAR_SLIDE_POSITION;
-import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -52,7 +44,7 @@ public class MecanumOpMode extends OpMode
     double strafe = 0.0;
 
     int linearSlide = 0;
-    double clawPos = CLAW_ZERO_POSITION;
+    double clawPos = BigBob.CLAW_ZERO_POSITION;
 
     BigBob bot;
 
@@ -91,43 +83,28 @@ public class MecanumOpMode extends OpMode
             linearSlide -= 10;
         }
         else if (gamepad1.y) {
-            linearSlide = MAX_LINEAR_SLIDE_POSITON;
+            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITON;
         }
         else if (gamepad1.x) {
-            linearSlide = MEDIUM_LINEAR_SLIDE_POSITION;
+            linearSlide = BigBob.MEDIUM_LINEAR_SLIDE_POSITION;
         }
         else if (gamepad1.b) {
-            linearSlide = LOW_LINEAR_SLIDE_POSITION;
+            linearSlide = BigBob.LOW_LINEAR_SLIDE_POSITION;
         }
         else if (gamepad1.a) {
-            linearSlide = 0;
-        }
-
-        if (linearSlide > MAX_LINEAR_SLIDE_POSITON) {
-            linearSlide = MAX_LINEAR_SLIDE_POSITON;
-        }
-        else if (linearSlide < MIN_LINEAR_SLIDE_POSITION) {
-            linearSlide = MIN_LINEAR_SLIDE_POSITION;
+            linearSlide = BigBob.MIN_LINEAR_SLIDE_POSITION;
         }
 
         if (gamepad1.dpad_right) { // open
-            if (clawPos < CLAW_OPEN) {
+            if (clawPos < BigBob.CLAW_OPEN) {
                 clawPos += 0.05;
-            }
-            if (clawPos > CLAW_OPEN) {
-                clawPos = CLAW_OPEN;
             }
         }
         else if (gamepad1.dpad_left) { // close
-            if (clawPos > CLAW_CLOSED) {
+            if (clawPos > BigBob.CLAW_CLOSED) {
                 clawPos -= 0.05;
             }
-            if (clawPos < CLAW_CLOSED) {
-                clawPos = CLAW_CLOSED;
-            }
         }
-
-        bot.clawServo.setPosition(clawPos);
 
         telemetry.addData("linearSlideMotor", linearSlide);
         telemetry.addData("linearSlideEncoder", bot.linearSlideMotor.getCurrentPosition());
@@ -135,6 +112,7 @@ public class MecanumOpMode extends OpMode
         telemetry.addData("clawServo", bot.clawServo.getPosition());
         telemetry.update();
 
+        bot.moveClaw(clawPos);
         bot.moveLinearSlide(linearSlide);
 
         try {

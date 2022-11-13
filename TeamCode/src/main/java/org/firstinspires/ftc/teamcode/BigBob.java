@@ -87,9 +87,25 @@ public class BigBob {
         rightBackMotor.setPower(0);
     }
 
+    public void moveClaw(double pos) {
+        if (pos > CLAW_OPEN) {
+            pos = CLAW_OPEN;
+        }
+        else if (pos < CLAW_CLOSED) {
+            pos = CLAW_CLOSED;
+        }
+        clawServo.setPosition(pos);
+    }
+
     public void moveLinearSlide(int ticks) {
+        if (ticks > MAX_LINEAR_SLIDE_POSITON) {
+            ticks = MAX_LINEAR_SLIDE_POSITON;
+        }
+        else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
+            ticks = MIN_LINEAR_SLIDE_POSITION;
+        }
         linearSlideMotor.setTargetPosition(ticks);
-        if (ticks > 0) {
+        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
             linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
         }
         else {
