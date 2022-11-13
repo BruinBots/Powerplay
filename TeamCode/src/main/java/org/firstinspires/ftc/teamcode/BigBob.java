@@ -88,6 +88,9 @@ public class BigBob {
         if (ticks > 0) {
             linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
         }
+        else if (linearSlideMotor.getCurrentPosition() > 1000) {
+            linearSlideMotor.setPower(0);
+        }
         else {
             linearSlideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
         }
