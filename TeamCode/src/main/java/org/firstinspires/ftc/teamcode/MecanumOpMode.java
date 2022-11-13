@@ -33,7 +33,9 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_CLOSED;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_ZERO_POSITION;
+import static org.firstinspires.ftc.teamcode.BigBob.LOW_LINEAR_SLIDE_POSITION;
 import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITON;
+import static org.firstinspires.ftc.teamcode.BigBob.MEDIUM_LINEAR_SLIDE_POSITION;
 import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
 import static java.lang.Thread.sleep;
 
@@ -83,13 +85,19 @@ public class MecanumOpMode extends OpMode
 
         // Linear Slide Code`
         if (gamepad1.dpad_up) {
-            linearSlide += 500;
+            linearSlide += 10;
         }
         else if (gamepad1.dpad_down) {
-            linearSlide -= 500;
+            linearSlide -= 10;
         }
         else if (gamepad1.y) {
             linearSlide = MAX_LINEAR_SLIDE_POSITON;
+        }
+        else if (gamepad1.x) {
+            linearSlide = MEDIUM_LINEAR_SLIDE_POSITION;
+        }
+        else if (gamepad1.b) {
+            linearSlide = LOW_LINEAR_SLIDE_POSITION;
         }
         else if (gamepad1.a) {
             linearSlide = 0;
