@@ -29,11 +29,6 @@ public class BigBob {
     public static final double LINEAR_SLIDE_POWER = 0.2;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
-//    public DigitalChannel leftFrontSwitch;
-//    public DigitalChannel rightFrontSwitch;
-
-    //
-
     // constructor with map
     public BigBob(HardwareMap map) {
         // Drivetrain Motors
@@ -45,17 +40,11 @@ public class BigBob {
         linearSlideMotor = map.get(DcMotorEx.class, "linearSlide");
         linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        linearSlideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         clawServo = map.get(Servo.class, "clawServo");
 
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-        // Front Switches
-//        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-//        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -102,12 +91,6 @@ public class BigBob {
         else {
             linearSlideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
         }
-//        if (linearSlideMotor.getCurrentPosition() > BigBob.MAX_LINEAR_SLIDE_POSITON) {
-//            linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
-//        }
-//        else if (linearSlideMotor.getCurrentPosition() < BigBob.MIN_LINEAR_SLIDE_POSITION) {
-//            linearSlideMotor.setPower(0);
-//        }
         linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }

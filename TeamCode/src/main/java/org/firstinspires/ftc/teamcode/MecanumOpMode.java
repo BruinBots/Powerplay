@@ -30,19 +30,15 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_CLOSED;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.BigBob.CLAW_ZERO_POSITION;
 import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITON;
 import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
-
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 @TeleOp(name="Basic: Iterative OpMode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode
@@ -138,9 +134,6 @@ public class MecanumOpMode extends OpMode
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        //telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
-       // telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
     }
 
 
