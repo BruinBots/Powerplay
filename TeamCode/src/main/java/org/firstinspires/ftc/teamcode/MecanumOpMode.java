@@ -105,6 +105,15 @@ public class MecanumOpMode extends OpMode
                 clawPos -= 0.05;
             }
         }
+        else if (gamepad1.left_bumper) {
+            clawPos = BigBob.CLAW_OPEN;
+        }
+        else if (gamepad1.left_trigger > 0.2) {
+            clawPos = BigBob.CLAW_OPEN - (BigBob.CLAW_OPEN - BigBob.CLAW_CLOSED) * gamepad1.left_trigger;
+        }
+        else if (gamepad1.left_trigger > 0.8) {
+            clawPos = BigBob.CLAW_CLOSED;
+        }
 
         telemetry.addData("linearSlideMotor", linearSlide);
         telemetry.addData("linearSlideEncoder", bot.linearSlideMotor.getCurrentPosition());

@@ -20,15 +20,15 @@ public class BigBob {
     public Servo clawServo;
 
     public static final double CLAW_OPEN = 0.7;
-    public static final double CLAW_CLOSED = 0.3
-            ;
+    public static final double CLAW_CLOSED = 0.3;
+
     public static final double CLAW_ZERO_POSITION = 0.4;
 
     public static final int MAX_LINEAR_SLIDE_POSITON = 2100;
     public static final int MIN_LINEAR_SLIDE_POSITION = 10;
 
-    public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1600;
-    public static final int LOW_LINEAR_SLIDE_POSITION = 1000;
+    public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
+    public static final int LOW_LINEAR_SLIDE_POSITION = 900;
 
     public static final double LINEAR_SLIDE_POWER = 0.2;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
