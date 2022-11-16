@@ -20,7 +20,7 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 753.2; // entering in gearobox output from gobuilda wesbite
+    public static final double TICKS_PER_REV = 537.6; // 5203 19s rpm DIFFERENT MODEL then the normal 5203
     public static final double MAX_RPM = 312; // motors says 312 rpm, website says 223 rpm
 
     /*
@@ -43,9 +43,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 1; // in
+    public static double WHEEL_RADIUS = 1.88976; // gobuilda mecanum radius from rr gen
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 6.67 ; // i
+    public static double TRACK_WIDTH = 10.8 ; // WHEELBASE OF CHASSIS width
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -64,10 +64,10 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 20; // assuming inches/second?
-    public static double MAX_ACCEL = 20;
-    public static double MAX_ANG_VEL = Math.toRadians(60);
-    public static double MAX_ANG_ACCEL = Math.toRadians(60);
+    public static double MAX_VEL = 52; // assuming inches/second?
+    public static double MAX_ACCEL = 52; // truncated decimals from rr generator cuz there was liek 10 decimal points
+    public static double MAX_ANG_VEL = Math.toRadians(184);
+    public static double MAX_ANG_ACCEL = Math.toRadians(184);
 
 
     public static double encoderTicksToInches(double ticks) {
