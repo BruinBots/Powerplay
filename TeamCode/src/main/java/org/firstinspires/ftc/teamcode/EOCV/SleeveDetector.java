@@ -1,128 +1,100 @@
 package org.firstinspires.ftc.teamcode.EOCV;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class SleeveDetector extends OpenCvPipeline {
-    /*
-    YELLOW  = Parking Left
-    CYAN    = Parking Middle
-    MAGENTA = Parking Right
-     */
+    Telemetry telemetry;
+    Mat mat = new Mat();
+    static final Rect LEFT_ROI = new Rect(
+            new Point(75, 200),
+            new Point(425, 350)
+    );
 
-    public enum ParkingPosition {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
+    static final Rect CENTER_ROI = new Rect(
+            new Point(800, 200), // was 775
+            new Point(1150, 350) // was 850
+    );
 
-    // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(145, 168);
+    static final Rect RIGHT_ROI = new Rect(
+            new Point(1450, 200),
+            new Point(1800, 350)
+    );
 
-    // Width and height for the bounding box
-    public static int REGION_WIDTH = 30;
-    public static int REGION_HEIGHT = 50;
+    static double PERCENT_COLOR_THRESHOLD = 0.4; // the threshold of purple when the camera sees the TSE
+    public SleeveDetector(Telemetry t) { telemetry = t; }
 
-    // Lower and upper boundaries for colors
-    private static final Scalar
-            lower_yellow_bounds  = new Scalar(200, 200, 0, 255),
-            upper_yellow_bounds  = new Scalar(255, 255, 130, 255),
-            lower_cyan_bounds    = new Scalar(0, 200, 200, 255),
-            upper_cyan_bounds    = new Scalar(150, 255, 255, 255),
-            lower_magenta_bounds = new Scalar(170, 0, 170, 255),
-            upper_magenta_bounds = new Scalar(255, 60, 255, 255);
-
-    // Color definitions
-    private final Scalar
-            YELLOW  = new Scalar(255, 255, 0),
-            CYAN    = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255);
-
-    // Percent and mat definitions
-    private double yelPercent, cyaPercent, magPercent;
-    private Mat yelMat = new Mat(), cyaMat = new Mat(), magMat = new Mat(), blurredMat = new Mat();
-
-    // Anchor point definitions
-    Point sleeve_pointA = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y);
-    Point sleeve_pointB = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
-    // Running variable storing the parking position
-    private volatile ParkingPosition position = ParkingPosition.LEFT;
+    public boolean barLeft;
+    public boolean barCenter;
+    public boolean barRight;
 
     @Override
     public Mat processFrame(Mat input) {
-        // Noise reduction
-        Imgproc.blur(input, blurredMat, new Size(5, 5));
-        blurredMat = blurredMat.submat(new Rect(sleeve_pointA, sleeve_pointB));
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
-        // Apply Morphology
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
-        Imgproc.morphologyEx(blurredMat, blurredMat, Imgproc.MORPH_CLOSE, kernel);
+        // find the yellow value (change this to purple)
+        Scalar lowHSV = new Scalar(115, 20, 50);
+        Scalar highHSV = new Scalar(180, 255, 255);
 
-        // Gets channels from given source mat
-        Core.inRange(blurredMat, lower_yellow_bounds, upper_yellow_bounds, yelMat);
-        Core.inRange(blurredMat, lower_cyan_bounds, upper_cyan_bounds, cyaMat);
-        Core.inRange(blurredMat, lower_magenta_bounds, upper_magenta_bounds, magMat);
+        Core.inRange(mat, lowHSV, highHSV, mat);
 
-        // Gets color specific values
-        yelPercent = Core.countNonZero(yelMat);
-        cyaPercent = Core.countNonZero(cyaMat);
-        magPercent = Core.countNonZero(magMat);
+        Mat left = mat.submat(LEFT_ROI);
+        Mat center = mat.submat(CENTER_ROI);
+        Mat right = mat.submat(RIGHT_ROI);
 
-        // Calculates the highest amount of pixels being covered on each side
-        double maxPercent = Math.max(yelPercent, Math.max(cyaPercent, magPercent));
+        double leftTotal = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
+        double centerTotal = Core.sumElems(center).val[0] / CENTER_ROI.area() / 255;
+        double rightTotal = Core.sumElems(right).val[0] / RIGHT_ROI.area() / 255;
 
-        // Checks all percentages, will highlight bounding box in camera preview
-        // based on what color is being detected
-        if (maxPercent == yelPercent) {
-            position = ParkingPosition.LEFT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    YELLOW,
-                    2
-            );
-        } else if (maxPercent == cyaPercent) {
-            position = ParkingPosition.CENTER;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    CYAN,
-                    2
-            );
-        } else if (maxPercent == magPercent) {
-            position = ParkingPosition.RIGHT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    MAGENTA,
-                    2
-            );
+        left.release();
+        center.release();
+        right.release();
+
+        telemetry.addData("Left raw val", (int) Core.sumElems(left).val[0]);
+        telemetry.addData("Center raw val", (int) Core.sumElems(center).val[0]);
+        telemetry.addData("Right raw val", (int) Core.sumElems(right).val[0]);
+
+        telemetry.addData("Left percentage", Math.round(leftTotal * 100) + "%");
+        telemetry.addData("center percentage", Math.round(centerTotal * 100) + "%");
+        telemetry.addData("right percentage", Math.round(rightTotal * 100) + "%");
+
+
+        double maxOfVals = Math.max(centerTotal, Math.max(leftTotal, rightTotal));
+
+        barLeft = (maxOfVals == leftTotal);
+        barCenter = (maxOfVals == centerTotal);
+        barRight = (maxOfVals == rightTotal);
+
+        if(barLeft){
+            telemetry.addData("Barcode:", " Left");
         }
 
-        // Memory cleanup
-        blurredMat.release();
-        yelMat.release();
-        cyaMat.release();
-        magMat.release();
+        if(barCenter){
+            telemetry.addData("Barcode:", " Center");
+        }
 
-        return input;
+        if(barRight){
+            telemetry.addData("Barcode:", " Right");
+        }
+        telemetry.update();
+
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
+
+        Scalar onBarcode = new Scalar(200, 0, 255); // purple cuz purple team shipping element (aesthetic)
+        Scalar notOnBarcode = new Scalar(255, 0, 0);
+
+        Imgproc.rectangle(mat, LEFT_ROI, barLeft? onBarcode:notOnBarcode, 4);
+        Imgproc.rectangle(mat, CENTER_ROI, barCenter? onBarcode:notOnBarcode, 4);
+        Imgproc.rectangle(mat, RIGHT_ROI, barRight? onBarcode:notOnBarcode, 4);
+
+        return mat;
     }
 
-    // Returns an enum being the current position where the robot will park
-    public ParkingPosition getPosition() {
-        return position;
-    }
+
 }
