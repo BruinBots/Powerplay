@@ -19,12 +19,12 @@ public class BigBob {
     public DcMotorEx linearSlideMotor;
     public Servo clawServo;
 
-    public static final double CLAW_OPEN = 0.7;
-    public static final double CLAW_CLOSED = 0.3;
+    public static final double CLAW_OPEN = 0.95;
+    public static final double CLAW_CLOSED = 0.65;
 
-    public static final double CLAW_ZERO_POSITION = 0.4;
+    public static final double CLAW_ZERO_POSITION = 0.65;
 
-    public static final int MAX_LINEAR_SLIDE_POSITON = 2100;
+    public static final int MAX_LINEAR_SLIDE_POSITION = 1950;
     public static final int MIN_LINEAR_SLIDE_POSITION = 10;
 
     public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
@@ -98,8 +98,8 @@ public class BigBob {
     }
 
     public void moveLinearSlide(int ticks) {
-        if (ticks > MAX_LINEAR_SLIDE_POSITON) {
-            ticks = MAX_LINEAR_SLIDE_POSITON;
+        if (ticks > MAX_LINEAR_SLIDE_POSITION) {
+            ticks = MAX_LINEAR_SLIDE_POSITION;
         }
         else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
             ticks = MIN_LINEAR_SLIDE_POSITION;
