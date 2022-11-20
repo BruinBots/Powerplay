@@ -33,9 +33,9 @@ public class SleeveDetector extends OpenCvPipeline {
 //    public boolean barLeft;
 //    public boolean barCenter;
 //    public boolean barRight;
-    public boolean barLeft;
-    public boolean barCenter;
-    public boolean barRight;
+    public boolean blue;
+    public boolean green;
+    public boolean red;
 
     @Override
     public Mat processFrame(Mat input) {
@@ -84,33 +84,33 @@ public class SleeveDetector extends OpenCvPipeline {
         telemetry.addData("Red percentage", Math.round(bluePerc * 100) + "%");
 
 
-//        double maxOfVals = Math.max(redPerc, Math.max(greenPerc, bluePerc));
+        double maxOfVals = Math.max(redPerc, Math.max(greenPerc, bluePerc));
 //
-//        barLeft = (maxOfVals == greenPerc);
-//        barCenter = (maxOfVals == redPerc);
-//        barRight = (maxOfVals == bluePerc);
-//
-//        if(barLeft){
-//            telemetry.addData("Barcode:", " Left");
-//        }
-//
-//        if(barCenter){
-//            telemetry.addData("Barcode:", " Center");
-//        }
-//
-//        if(barRight){
-//            telemetry.addData("Barcode:", " Right");
-//        }
-//        telemetry.update();
-//
-//        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
-//
-//        Scalar onBarcode = new Scalar(200, 0, 255); // purple cuz purple team shipping element (aesthetic)
-//        Scalar notOnBarcode = new Scalar(255, 0, 0);
-//
-//        Imgproc.rectangle(mat, LEFT_ROI, barLeft? onBarcode:notOnBarcode, 4);
-//        Imgproc.rectangle(mat, CENTER_ROI, barCenter? onBarcode:notOnBarcode, 4);
-//        Imgproc.rectangle(mat, RIGHT_ROI, barRight? onBarcode:notOnBarcode, 4);
+        green = (maxOfVals == greenPerc);
+        red = (maxOfVals == redPerc);
+        blue = (maxOfVals == bluePerc);
+
+        if(green){
+            telemetry.addData("Barcode:", " Left");
+        }
+
+        if(red){
+            telemetry.addData("Barcode:", " Center");
+        }
+
+        if(blue){
+            telemetry.addData("Barcode:", " Right");
+        }
+        telemetry.update();
+
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
+
+        Scalar onBarcode = new Scalar(200, 0, 255); // purple cuz purple team shipping element (aesthetic)
+        Scalar notOnBarcode = new Scalar(255, 0, 0);
+
+        Imgproc.rectangle(mat, LEFT_ROI, green? onBarcode:notOnBarcode, 4);
+        Imgproc.rectangle(mat, LEFT_ROI, red? onBarcode:notOnBarcode, 4);
+        Imgproc.rectangle(mat, LEFT_ROI, blue? onBarcode:notOnBarcode, 4);
 
         return mat;
     }
