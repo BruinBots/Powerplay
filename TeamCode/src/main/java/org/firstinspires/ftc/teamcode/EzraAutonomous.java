@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Autonomous(name="Ezra: Autonomous", group="Iterative Opmode")
 public class EzraAutonomous extends OpMode {
 
-    public static int SQUARE_SIZE = 10;
+    public static double SQUARE_SIZE = -0.5;
 
     BigBob bot;
 
@@ -19,7 +19,7 @@ public class EzraAutonomous extends OpMode {
     }
 
     public void start() {
-
+        bot.moveBot(SQUARE_SIZE, 0, 0, 0.5);
     }
 
     @Override
