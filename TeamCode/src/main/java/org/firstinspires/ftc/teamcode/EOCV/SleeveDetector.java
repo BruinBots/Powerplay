@@ -30,6 +30,9 @@ public class SleeveDetector extends OpenCvPipeline {
     static double PERCENT_COLOR_THRESHOLD = 0.4; // the threshold of purple when the camera sees the TSE
     public SleeveDetector(Telemetry t) { telemetry = t; }
 
+//    public boolean barLeft;
+//    public boolean barCenter;
+//    public boolean barRight;
     public boolean barLeft;
     public boolean barCenter;
     public boolean barRight;
@@ -39,59 +42,75 @@ public class SleeveDetector extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
 
         // find the yellow value (change this to purple)
-        Scalar lowHSV = new Scalar(115, 20, 50);
-        Scalar highHSV = new Scalar(180, 255, 255);
+        Scalar lowHSVGreen = new Scalar(115, 20, 50);
+        Scalar highHSVGreen = new Scalar(180, 255, 255);
 
-        Core.inRange(mat, lowHSV, highHSV, mat);
+        Scalar lowHSVRed = new Scalar(0, 20, 50);
+        Scalar highHSVRed = new Scalar(40, 255, 255);
 
+        Scalar lowHSVBlue = new Scalar(40, 20, 50);
+        Scalar highHSVBlue = new Scalar(80, 255, 255);
+
+
+
+
+//        Mat center = mat.submat(CENTER_ROI);
+//        Mat right = mat.submat(RIGHT_ROI);
+        Core.inRange(mat, lowHSVGreen, highHSVGreen, mat);
         Mat left = mat.submat(LEFT_ROI);
-        Mat center = mat.submat(CENTER_ROI);
-        Mat right = mat.submat(RIGHT_ROI);
-
-        double leftTotal = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
-        double centerTotal = Core.sumElems(center).val[0] / CENTER_ROI.area() / 255;
-        double rightTotal = Core.sumElems(right).val[0] / RIGHT_ROI.area() / 255;
-
+        double greenPerc = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
+        double greenTotal = Core.sumElems(left).val[0];
         left.release();
-        center.release();
-        right.release();
 
-        telemetry.addData("Left raw val", (int) Core.sumElems(left).val[0]);
-        telemetry.addData("Center raw val", (int) Core.sumElems(center).val[0]);
-        telemetry.addData("Right raw val", (int) Core.sumElems(right).val[0]);
+        Core.inRange(mat, lowHSVRed, highHSVRed, mat);
+        left = mat.submat(LEFT_ROI);
+        double redPerc = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
+        double redTotal = Core.sumElems(left).val[0];
+        left.release();
 
-        telemetry.addData("Left percentage", Math.round(leftTotal * 100) + "%");
-        telemetry.addData("center percentage", Math.round(centerTotal * 100) + "%");
-        telemetry.addData("right percentage", Math.round(rightTotal * 100) + "%");
+        Core.inRange(mat, lowHSVBlue, highHSVBlue, mat);
+        left = mat.submat(LEFT_ROI);
+        double bluePerc = Core.sumElems(left).val[0] / LEFT_ROI.area() / 255;
+        double blueTotal = Core.sumElems(left).val[0];
+        left.release();
 
 
-        double maxOfVals = Math.max(centerTotal, Math.max(leftTotal, rightTotal));
+        telemetry.addData("Green raw val", greenTotal);
+        telemetry.addData("Blue raw val", redTotal);
+        telemetry.addData("Red raw val", blueTotal);
 
-        barLeft = (maxOfVals == leftTotal);
-        barCenter = (maxOfVals == centerTotal);
-        barRight = (maxOfVals == rightTotal);
+        telemetry.addData("Green percentage", Math.round(greenPerc * 100) + "%");
+        telemetry.addData("Blue percentage", Math.round(redPerc * 100) + "%");
+        telemetry.addData("Red percentage", Math.round(bluePerc * 100) + "%");
 
-        if(barLeft){
-            telemetry.addData("Barcode:", " Left");
-        }
 
-        if(barCenter){
-            telemetry.addData("Barcode:", " Center");
-        }
-
-        if(barRight){
-            telemetry.addData("Barcode:", " Right");
-        }
-        telemetry.update();
-
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
-
-        Scalar onBarcode = new Scalar(200, 0, 255); // purple cuz purple team shipping element (aesthetic)
-        Scalar notOnBarcode = new Scalar(255, 0, 0);
-
-        Imgproc.rectangle(mat, LEFT_ROI, barLeft? onBarcode:notOnBarcode, 4);
-        Imgproc.rectangle(mat, CENTER_ROI, barCenter? onBarcode:notOnBarcode, 4);
-        Imgproc.rectangle(mat, RIGHT_ROI, barRight? onBarcode:notOnBarcode, 4);
+//        double maxOfVals = Math.max(redPerc, Math.max(greenPerc, bluePerc));
+//
+//        barLeft = (maxOfVals == greenPerc);
+//        barCenter = (maxOfVals == redPerc);
+//        barRight = (maxOfVals == bluePerc);
+//
+//        if(barLeft){
+//            telemetry.addData("Barcode:", " Left");
+//        }
+//
+//        if(barCenter){
+//            telemetry.addData("Barcode:", " Center");
+//        }
+//
+//        if(barRight){
+//            telemetry.addData("Barcode:", " Right");
+//        }
+//        telemetry.update();
+//
+//        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_GRAY2RGB);
+//
+//        Scalar onBarcode = new Scalar(200, 0, 255); // purple cuz purple team shipping element (aesthetic)
+//        Scalar notOnBarcode = new Scalar(255, 0, 0);
+//
+//        Imgproc.rectangle(mat, LEFT_ROI, barLeft? onBarcode:notOnBarcode, 4);
+//        Imgproc.rectangle(mat, CENTER_ROI, barCenter? onBarcode:notOnBarcode, 4);
+//        Imgproc.rectangle(mat, RIGHT_ROI, barRight? onBarcode:notOnBarcode, 4);
 
         return mat;
     }
