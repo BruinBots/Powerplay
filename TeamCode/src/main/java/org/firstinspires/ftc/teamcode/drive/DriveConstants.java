@@ -45,7 +45,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // gobuilda mecanum radius from rr gen
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 12.5 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5
+    public static double TRACK_WIDTH = 12.5 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5, ayaan chnaged to 10.5 because center to center
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -53,9 +53,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = .005; // coach vince
-    public static double kA = .002; // coach vince
-    public static double kStatic = .01; //coach vince
+    public static double kV = .005; // coach vince .005, set to 1/40 rn
+    public static double kA = 0.002; // coach vince .002
+    public static double kStatic = 0.01; //coach vince .01
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -64,8 +64,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 52; // assuming inches/second?
-    public static double MAX_ACCEL = 52; // truncated decimals from rr generator cuz there was liek 10 decimal points
+    public static double MAX_VEL = 40; // assuming inches/second? // changed to 40 from 52, too fast
+    public static double MAX_ACCEL = 40; // truncated decimals from rr generator cuz there was liek 10 decimal points
     public static double MAX_ANG_VEL = Math.toRadians(184);
     public static double MAX_ANG_ACCEL = Math.toRadians(184);
 
