@@ -8,25 +8,19 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
+
 @Autonomous(name="Ezra: Autonomous", group="Iterative Opmode")
 public class EzraAutonomous extends OpMode {
-
-    public DcMotorEx leftFrontMotor;
-    public DcMotorEx rightFrontMotor;
-    public DcMotorEx leftBackMotor;
-    public DcMotorEx rightBackMotor;
-
-    public DcMotorEx linearSlideMotor;
-    public Servo clawServo;
 
     public static double BOT_SPEED = -0.5;
     public static int squareSize = 24;
     public static double circumference = 1.91;
     public static double ticksPerRotation = 537.6;
+    public static double leftFrontEncoder;
 
     BigBob bot;
     public void move(double squares, double drive, double rotation, double strafe, double scaleFactor) {
-        double leftFrontEncoder = leftFrontMotor.getCurrentPosition();;
+        leftFrontEncoder = bot.leftFrontMotor.getCurrentPosition();;
         double distance = squares * squareSize;
         double rotations = distance / circumference;
         double ticks = rotations * ticksPerRotation;
@@ -40,6 +34,7 @@ public class EzraAutonomous extends OpMode {
     public void init() {
 
         bot = new BigBob(hardwareMap);
+        telemetry.addData("leftFrontEncoder", leftFrontEncoder);
     }
 
     public void start() {
