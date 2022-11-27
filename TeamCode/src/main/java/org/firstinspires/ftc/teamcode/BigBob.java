@@ -33,8 +33,6 @@ public class BigBob {
     public static final double LINEAR_SLIDE_POWER = 0.2;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
-    public BigBob() {
-    }
         // constructor with map
     public BigBob(HardwareMap map) {
         // Drivetrain Motors

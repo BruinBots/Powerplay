@@ -45,7 +45,7 @@ public class EzraNewAuto extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
 
-    BigBob bot = new BigBob();
+    BigBob bot = new BigBob(hardwareMap);
 
     public static double BOT_SPEED = -0.5;
     public static int squareSize = 24;
