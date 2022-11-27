@@ -29,6 +29,10 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.BigBob.CLAW_CLOSED;
+import static org.firstinspires.ftc.teamcode.BigBob.CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.BigBob.MAX_LINEAR_SLIDE_POSITION;
+import static org.firstinspires.ftc.teamcode.BigBob.MIN_LINEAR_SLIDE_POSITION;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -77,13 +81,23 @@ public class MecanumOpMode extends OpMode
 
         // Linear Slide Code`
         if (gamepad1.dpad_up) {
-            linearSlide += 10;
+            if (linearSlide > MAX_LINEAR_SLIDE_POSITION) {
+                linearSlide = MAX_LINEAR_SLIDE_POSITION;
+            }
+            else {
+                linearSlide += 10;
+            }
         }
         else if (gamepad1.dpad_down) {
-            linearSlide -= 10;
+            if (linearSlide < MIN_LINEAR_SLIDE_POSITION) {
+                linearSlide = MIN_LINEAR_SLIDE_POSITION;
+            }
+            else {
+                linearSlide -= 10;
+            }
         }
         else if (gamepad1.y) {
-            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITON;
+            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITION;
         }
         else if (gamepad1.x) {
             linearSlide = BigBob.MEDIUM_LINEAR_SLIDE_POSITION;
@@ -92,27 +106,33 @@ public class MecanumOpMode extends OpMode
             linearSlide = BigBob.LOW_LINEAR_SLIDE_POSITION;
         }
         else if (gamepad1.a) {
-            linearSlide = BigBob.MIN_LINEAR_SLIDE_POSITION;
+            linearSlide = MIN_LINEAR_SLIDE_POSITION;
         }
 
         if (gamepad1.dpad_right) { // open
-            if (clawPos < BigBob.CLAW_OPEN) {
+            if (clawPos < CLAW_OPEN) {
                 clawPos += 0.05;
+            }
+            if (clawPos > CLAW_OPEN) {
+                clawPos = CLAW_OPEN;
             }
         }
         else if (gamepad1.dpad_left) { // close
-            if (clawPos > BigBob.CLAW_CLOSED) {
+            if (clawPos > CLAW_CLOSED) {
                 clawPos -= 0.05;
+            }
+            if (clawPos < CLAW_CLOSED) {
+                clawPos = CLAW_CLOSED;
             }
         }
         else if (gamepad1.left_bumper) {
-            clawPos = BigBob.CLAW_OPEN;
+            clawPos = CLAW_OPEN;
         }
         else if (gamepad1.left_trigger > 0.2) {
-            clawPos = BigBob.CLAW_OPEN - (BigBob.CLAW_OPEN - BigBob.CLAW_CLOSED) * gamepad1.left_trigger;
+            clawPos = CLAW_OPEN - (CLAW_OPEN - CLAW_CLOSED) * gamepad1.left_trigger;
         }
         else if (gamepad1.left_trigger > 0.8) {
-            clawPos = BigBob.CLAW_CLOSED;
+            clawPos = CLAW_CLOSED;
         }
 
         telemetry.addData("linearSlideMotor", linearSlide);
@@ -129,13 +149,13 @@ public class MecanumOpMode extends OpMode
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+
+
+
+
     }
-
-
     @Override
     public void stop() {
     }
-
-
-
 }

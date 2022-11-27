@@ -1,0 +1,56 @@
+Index: TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumOpMode.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* Copyright (c) 2017 FIRST. All rights reserved.\r\n *\r\n * Redistribution and use in source and binary forms, with or without modification,\r\n * are permitted (subject to the limitations in the disclaimer below) provided that\r\n * the following conditions are met:\r\n *\r\n * Redistributions of source code must retain the above copyright notice, this list\r\n * of conditions and the following disclaimer.\r\n *\r\n * Redistributions in binary form must reproduce the above copyright notice, this\r\n * list of conditions and the following disclaimer in the documentation and/or\r\n * other materials provided with the distribution.\r\n *\r\n * Neither the name of FIRST nor the names of its contributors may be used to endorse or\r\n * promote products derived from this software without specific prior written permission.\r\n *\r\n * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS\r\n * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\r\n * \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,\r\n * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\r\n * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE\r\n * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\r\n * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\r\n * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\r\n * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\r\n * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\r\n * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\r\n */\r\n\r\npackage org.firstinspires.ftc.teamcode;\r\n\r\n\r\nimport com.qualcomm.robotcore.eventloop.opmode.OpMode;\r\nimport com.qualcomm.robotcore.eventloop.opmode.TeleOp;\r\n\r\n@TeleOp(name=\"charlie, pls click this op mode\", group=\"Iterative Opmode\")\r\npublic class MecanumOpMode extends OpMode {\r\n    // Declare OpMode members.\r\n\r\n    double drive = 0.0;\r\n    double turn = 0.0;\r\n    double strafe = 0.0;\r\n\r\n    double armPower = 0.0;\r\n    double clawPos = 0.0;\r\n\r\n    int armPos;\r\n\r\n    Karen bot;\r\n\r\n    //\r\n    @Override\r\n    public void init() {\r\n\r\n        bot = new Karen(hardwareMap);\r\n        telemetry.addData(\"Status\", \"Initialized\");\r\n        armPos = bot.armMotor.getCurrentPosition();\r\n    }\r\n\r\n    //\r\n    @Override\r\n    public void init_loop() {\r\n        armPos = bot.armMotor.getCurrentPosition();\r\n    }\r\n\r\n    //\r\n    @Override\r\n    public void start() {\r\n    }\r\n\r\n    //\r\n    @Override\r\n    public void loop() {\r\n        drive = -gamepad1.left_stick_y * 0.5;\r\n        strafe = gamepad1.left_stick_x * 0.5;\r\n        turn = gamepad1.right_stick_x * 0.5;\r\n\r\n        bot.moveBot(drive, turn, strafe, 0.5);\r\n\r\n\r\n        telemetry.addData(\"Left Switch\", bot.leftFrontSwitch.getState());\r\n        telemetry.addData(\"Right Switch\", bot.rightFrontSwitch.getState());\r\n\r\n\r\n        if (gamepad1.right_bumper)\r\n            clawPos = Karen.CLAW_OPEN;\r\n        if (gamepad1.left_bumper)\r\n            clawPos = Karen.CLAW_CLOSED;\r\n\r\n        //arm -----------------\r\n        if (gamepad1.dpad_down) { // arm down\r\n            armPos -= 10; // positive due to motor rotation flipped\r\n            // Lowest arm can go for safety,\r\n            if (armPos < Karen.MIN_ARM_POSITION){ // 40\r\n                armPos = Karen.MIN_ARM_POSITION;\r\n            }\r\n\r\n            bot.moveArm(armPos);\r\n            armPos = bot.getCurrentArmPos();\r\n            telemetry.addData(\"arm down\", \"\");\r\n        } else if (gamepad1.dpad_up) {\r\n            armPos += 10;\r\n\r\n            if(armPos > Karen.MAX_ARM_POSITION){ // -365\r\n                armPos = Karen.MAX_ARM_POSITION;\r\n            }\r\n\r\n            bot.moveArm(armPos);\r\n            armPos = bot.getCurrentArmPos();\r\n            telemetry.addData(\"arm up\", \"\");\r\n        } else {\r\n            bot.moveArm(armPos);\r\n            telemetry.addData(\"arm still\", \"\");\r\n        }\r\n\r\n\r\n        //hold to center\r\n        if(gamepad1.x){\r\n            telemetry.addData(\"\", bot.center());\r\n        }\r\n\r\n\r\n\r\n\r\n        bot.clawServo.setPosition(clawPos);\r\n\r\n        telemetry.addData(\"Servo: \", clawPos);\r\n        telemetry.addData(\"armPos:\", bot.getCurrentArmPos());\r\n\r\n        telemetry.addData(\"leftOdo: \", bot.leftFrontMotor.getCurrentPosition());\r\n        telemetry.addData(\"rightOdo: \", bot.rightFrontMotor.getCurrentPosition());\r\n        telemetry.addData(\"backOdo: \", bot.leftBackMotor.getCurrentPosition());\r\n        telemetry.addData(\"leftMotor\", bot.leftFrontMotor.getPower());\r\n\r\n    }\r\n\r\n\r\n    @Override\r\n    public void stop() {\r\n        bot.stop();\r\n    }\r\n\r\n}\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumOpMode.java b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumOpMode.java
+--- a/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumOpMode.java	
++++ b/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumOpMode.java	
+@@ -75,6 +75,12 @@
+         strafe = gamepad1.left_stick_x * 0.5;
+         turn = gamepad1.right_stick_x * 0.5;
+ 
++
++
++
++
++
++
+         bot.moveBot(drive, turn, strafe, 0.5);
+ 
+ 
+Index: .idea/compiler.xml
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	
++++ b/.idea/compiler.xml	
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="1.7">
++      <module name="Powerplay.FtcRobotController" target="11" />
++      <module name="Powerplay.TeamCode" target="11" />
++    </bytecodeTargetLevel>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_11\" default=\"true\" project-jdk-name=\"Android Studio default JDK\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	
++++ b/.idea/misc.xml	
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
