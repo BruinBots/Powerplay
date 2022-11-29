@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -7,6 +9,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.Encoder;
+
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 public class Karen  {
     // Class variables
@@ -31,8 +43,8 @@ public class Karen  {
     public static int MAX_ARM_POSITION = 160;
     public static int MIN_ARM_POSITION = 0;
 
-    public static double CLAW_OPEN = 0.66;
-    public static double CLAW_CLOSED = 0.04;
+    public static double CLAW_OPEN = 0.5;
+    public static double CLAW_CLOSED = 0.0;
 
     public static double ARM_POWER = 0.8;
 
@@ -122,11 +134,11 @@ public class Karen  {
         rightSwitch = rightFrontSwitch.getState(); // reversed because of yes
 
             if (leftSwitch && !rightSwitch) { // turn left
-                this.moveBot(0, -0.2, 0, 1);
+                this.moveBot(0, -0.1, 0, 1);
                 return "turning left";
             } // right on
             else if (!leftSwitch && rightSwitch) { //turn right
-                this.moveBot(0, 0.2, 0, 1);
+                this.moveBot(0, 0.1, 0, 1);
                 return "turning right";
             } // none on
             else if (!leftSwitch && !rightSwitch) { // do nothing
@@ -134,10 +146,15 @@ public class Karen  {
                 return "moving forward!";
             } else if (leftSwitch && rightSwitch) { // break out
                 return "found!";
+
             }
 
             return "error";
     }
+
+
+
+
 
 
 

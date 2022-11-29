@@ -33,6 +33,19 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
 @TeleOp(name="charlie, pls click this op mode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode {
     // Declare OpMode members.
@@ -55,6 +68,12 @@ public class MecanumOpMode extends OpMode {
         bot = new Karen(hardwareMap);
         telemetry.addData("Status", "Initialized");
         armPos = bot.armMotor.getCurrentPosition();
+
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        Trajectory correctAfterCetner = drive.trajectoryBuilder(new Pose2d())
+                .back(2.5)
+                .build();
     }
 
     //
@@ -114,6 +133,8 @@ public class MecanumOpMode extends OpMode {
         }
 
 
+
+
         //hold to center
         if(gamepad1.x){
             telemetry.addData("", bot.center());
@@ -140,6 +161,8 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("leftEncoderRawVel", bot.leftEncoder.getRawVelocity());
         telemetry.addData("rightEncoderRawVel", bot.rightEncoder.getRawVelocity());
         telemetry.addData("frontEncoderRawVel", bot.frontEncoder.getRawVelocity());
+
+
     }
 
 
