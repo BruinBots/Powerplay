@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -40,13 +41,13 @@ public class Karen  {
 
     public DigitalChannel leftOdoWheel;
 
-    public static int MAX_ARM_POSITION = 160;
+    public static int MAX_ARM_POSITION = 270;
     public static int MIN_ARM_POSITION = 0;
 
     public static double CLAW_OPEN = 0.5;
     public static double CLAW_CLOSED = 0.0;
 
-    public static double ARM_POWER = 0.8;
+    public static double ARM_POWER = 0.95;
 
     public boolean leftSwitch;
     public boolean rightSwitch;
@@ -71,6 +72,7 @@ public class Karen  {
 
         // arm assembly
         armMotor = map.get(DcMotorEx.class, "armMotor");
+        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");

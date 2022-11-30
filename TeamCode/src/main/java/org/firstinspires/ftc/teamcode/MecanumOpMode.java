@@ -36,15 +36,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 
-
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp(name="charlie, pls click this op mode", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode {
@@ -57,9 +50,19 @@ public class MecanumOpMode extends OpMode {
     double armPower = 0.0;
     double clawPos = 0.0;
 
+    boolean lastValofX = false;
+    String seekStatus = "";
+    boolean dropped = false;
+    boolean found = false;
+    boolean isLastValofA = false;
+
     int armPos;
 
     Karen bot;
+
+    SampleMecanumDrive roadRunnerDrive;
+
+    Trajectory correctAfterCetner;
 
     //
     @Override
@@ -69,9 +72,9 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("Status", "Initialized");
         armPos = bot.armMotor.getCurrentPosition();
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        roadRunnerDrive = new SampleMecanumDrive(hardwareMap);
 
-        Trajectory correctAfterCetner = drive.trajectoryBuilder(new Pose2d())
+        correctAfterCetner = roadRunnerDrive.trajectoryBuilder(new Pose2d())
                 .back(2.5)
                 .build();
     }
@@ -94,21 +97,25 @@ public class MecanumOpMode extends OpMode {
         strafe = gamepad1.left_stick_x * 0.5;
         turn = gamepad1.right_stick_x * 0.5;
 
-        bot.moveBot(drive, turn, strafe, 0.5);
+        bot.moveBot(drive, turn, strafe, 0.8);
 
 
         telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
         telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
 
-        if (gamepad1.right_bumper)
+        if (gamepad1.right_bumper) {
             clawPos = Karen.CLAW_OPEN;
-        if (gamepad1.left_bumper)
+            dropped = false;
+        }
+        if (gamepad1.left_bumper) {
             clawPos = Karen.CLAW_CLOSED;
+            dropped = false;
+        }
 
         //arm -----------------
         if (gamepad1.dpad_down) { // arm down
-            armPos -= 10; // positive due to motor rotation flipped
+            armPos -= 35; // positive due to motor rotation flipped
             // Lowest arm can go for safety,
             if (armPos < Karen.MIN_ARM_POSITION){ // 40
                 armPos = Karen.MIN_ARM_POSITION;
@@ -118,7 +125,7 @@ public class MecanumOpMode extends OpMode {
             armPos = bot.getCurrentArmPos();
             telemetry.addData("arm down", "");
         } else if (gamepad1.dpad_up) {
-            armPos += 10;
+            armPos += 35;
 
             if(armPos > Karen.MAX_ARM_POSITION){ // -365
                 armPos = Karen.MAX_ARM_POSITION;
@@ -136,11 +143,29 @@ public class MecanumOpMode extends OpMode {
 
 
         //hold to center
-        if(gamepad1.x){
-            telemetry.addData("", bot.center());
+        if(gamepad1.x && !dropped){
+            seekStatus = bot.center();
+            if(seekStatus.equals("found!") && !lastValofX){
+                roadRunnerDrive.followTrajectory(correctAfterCetner);
+                clawPos = Karen.CLAW_OPEN;
+                dropped = true;
+            }
         }
 
 
+
+        if (gamepad2.a && !isLastValofA){
+            roadRunnerDrive.followTrajectory(correctAfterCetner);
+            clawPos = bot.CLAW_OPEN;
+        }
+
+        isLastValofA = gamepad2.a;
+
+
+
+        telemetry.addData("Seek: ", seekStatus);
+        telemetry.addData("DROP: ", dropped);
+        lastValofX = gamepad1.x;
 
 
         bot.clawServo.setPosition(clawPos);
