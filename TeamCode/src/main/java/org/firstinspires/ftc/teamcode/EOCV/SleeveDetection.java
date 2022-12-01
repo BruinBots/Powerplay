@@ -24,12 +24,17 @@ public class SleeveDetection extends OpenCvPipeline {
         RIGHT
     }
 
+    double avgColorVal;
+    double area;
+    double sumColorsAtZero;
+
+
     // TOPLEFT anchor point for the bounding box
     private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(975, 450);
 
     // Width and height for the bounding box
-    public static int REGION_WIDTH = 30;
-    public static int REGION_HEIGHT = 50;
+    public static int REGION_WIDTH = 1;
+    public static int REGION_HEIGHT = 1;
 
     // Color definitions
     private final Scalar
@@ -55,13 +60,16 @@ public class SleeveDetection extends OpenCvPipeline {
         // Get the submat frame, and then sum all the values
 
         final Rect BOUNDING_BOX = new Rect(sleeve_pointA, sleeve_pointB);
-        Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
+        Mat areaMat = input.submat(BOUNDING_BOX);
         Imgproc.cvtColor(input, areaMat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
         Scalar sumColors = Core.sumElems(areaMat);
 
+        sumColorsAtZero = sumColors.val[0];
 
-        double avgColorVal = sumColors.val[0] / BOUNDING_BOX.area() / 255;
-        // telemetry.addData("BoundBoxArea: ", BOUNDING_BOX.area());
+
+        avgColorVal = sumColors.val[0] / BOUNDING_BOX.area() / 255;
+        area = BOUNDING_BOX.area();
+        telemetry.addData("BoundBoxArea: ", BOUNDING_BOX.area());
         telemetry.addData("AvgColor: ", avgColorVal);
         // Get the minimum RGB value from every single channel
         double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
