@@ -30,15 +30,17 @@ public class WebcamTest extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(1920,1080, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode) {}
         });
-
+//
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", sleeveDetection.getPosition());
+            telemetry.addData("AvgColor: ", sleeveDetection.avgColorVal);
+            telemetry.addData("Area: ", sleeveDetection.area);
+            telemetry.addData("SumColors[0]", sleeveDetection.sumColorsAtZero);
             telemetry.update();
         }
 
