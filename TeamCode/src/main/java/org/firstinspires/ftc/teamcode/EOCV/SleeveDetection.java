@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.EOCV;
 
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class SleeveDetection extends OpenCvPipeline {
+    Telemetry telemetry;
     /*
     YELLOW  = Parking Left
     CYAN    = Parking Middle
@@ -23,7 +25,7 @@ public class SleeveDetection extends OpenCvPipeline {
     }
 
     // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(145, 168);
+    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(975, 450);
 
     // Width and height for the bounding box
     public static int REGION_WIDTH = 30;
@@ -46,15 +48,25 @@ public class SleeveDetection extends OpenCvPipeline {
     // Running variable storing the parking position
     private volatile ParkingPosition position = ParkingPosition.LEFT;
 
+    public SleeveDetection(Telemetry t) { telemetry = t;}
+
     @Override
     public Mat processFrame(Mat input) {
         // Get the submat frame, and then sum all the values
 
+        final Rect BOUNDING_BOX = new Rect(sleeve_pointA, sleeve_pointB);
         Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
+        Imgproc.cvtColor(input, areaMat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
         Scalar sumColors = Core.sumElems(areaMat);
 
+
+        double avgColorVal = sumColors.val[0] / BOUNDING_BOX.area() / 255;
+        // telemetry.addData("BoundBoxArea: ", BOUNDING_BOX.area());
+        telemetry.addData("AvgColor: ", avgColorVal);
         // Get the minimum RGB value from every single channel
         double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
+
+
 
         // Change the bounding box color based on the sleeve color
         if (sumColors.val[0] == minColor) {
