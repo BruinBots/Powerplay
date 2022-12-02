@@ -24,9 +24,9 @@ public class SleeveDetection extends OpenCvPipeline {
         RIGHT
     }
 
-    double avgColorVal;
-    double area;
-    double sumColorsAtZero;
+    public double avgColorVal;
+    public double area;
+    public double sumColorsAtZero;
 
 
     // TOPLEFT anchor point for the bounding box
@@ -38,9 +38,17 @@ public class SleeveDetection extends OpenCvPipeline {
 
     // Color definitions
     private final Scalar
-            YELLOW  = new Scalar(255, 255, 0),
-            CYAN    = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255);
+            RED  = new Scalar(255, 0, 0),
+            GREEN    = new Scalar(0, 255, 0),
+            BLUE = new Scalar(0, 0, 255);
+
+    public double minRed = 150;
+    public double maxRed = 180;
+    public double minPurple = 90;
+    public double maxPurple = 120;
+    public double minGreen = 40; // found by dividing enriques vals by 2
+    public double maxGreen = 70;
+
 
     // Anchor point definitions
     Point sleeve_pointA = new Point(
@@ -61,48 +69,57 @@ public class SleeveDetection extends OpenCvPipeline {
 
         final Rect BOUNDING_BOX = new Rect(sleeve_pointA, sleeve_pointB);
         Mat areaMat = input.submat(BOUNDING_BOX);
+
         Imgproc.cvtColor(input, areaMat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
         Scalar sumColors = Core.sumElems(areaMat);
 
         sumColorsAtZero = sumColors.val[0];
-
-
         avgColorVal = sumColors.val[0] / BOUNDING_BOX.area() / 255;
         area = BOUNDING_BOX.area();
+
+
         telemetry.addData("BoundBoxArea: ", BOUNDING_BOX.area());
         telemetry.addData("AvgColor: ", avgColorVal);
+
+
         // Get the minimum RGB value from every single channel
-        double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
+        // double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
 
 
 
         // Change the bounding box color based on the sleeve color
-        if (sumColors.val[0] == minColor) {
-            position = ParkingPosition.CENTER;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    CYAN,
-                    2
-            );
-        } else if (sumColors.val[1] == minColor) {
-            position = ParkingPosition.RIGHT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    MAGENTA,
-                    2
-            );
-        } else {
+
+        // red == left = one dot
+        if (avgColorVal < maxRed && avgColorVal > minRed) {
             position = ParkingPosition.LEFT;
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,
                     sleeve_pointB,
-                    YELLOW,
-                    2
+                    RED,
+                    4
+            );
+
+            // green
+        } else if (avgColorVal < maxGreen && avgColorVal > minGreen) {
+            position = ParkingPosition.CENTER;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    GREEN,
+                    4
+            );
+
+            // blue
+        } else {
+            position = ParkingPosition.RIGHT;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    BLUE,
+                    4
             );
         }
 
