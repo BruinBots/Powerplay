@@ -9,6 +9,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.apache.commons.math3.analysis.integration.IterativeLegendreGaussIntegrator;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 
@@ -20,6 +24,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class Karen  {
     // Class variables
@@ -51,6 +58,12 @@ public class Karen  {
 
     public boolean leftSwitch;
     public boolean rightSwitch;
+
+
+    // For eocv
+
+    public SleeveDetection sleeveDetection;
+    public OpenCvCamera camera;
 
     //
 
@@ -169,6 +182,26 @@ public class Karen  {
     public int getCurrentArmPos(){
         return armMotor.getCurrentPosition();
     }
+
+    public void openCam(HardwareMap map, Telemetry t){
+        int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        sleeveDetection = new SleeveDetection(t);
+        camera.setPipeline(sleeveDetection);
+
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {}
+        });
+    }
+
 
     public void stop(){
         leftFrontMotor.setPower(0);
