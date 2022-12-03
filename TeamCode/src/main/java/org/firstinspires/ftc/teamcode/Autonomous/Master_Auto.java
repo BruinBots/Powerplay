@@ -82,18 +82,16 @@ public class Master_Auto extends LinearOpMode {
 
         waitForStart();
 
-            drive.followTrajectory(straight);
-//            drive.followTrajectory(strafeLeft);
-
-
         // drive straight first
-        drive.followTrajectory(straight);
+//        drive.followTrajectory(straight);
+//
+//        if(bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT){
+//            drive.followTrajectory(strafeLeft);
+//        } else if (bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT){
+//            drive.followTrajectory(strafeRight);
+//        }
 
-        if(bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT){
-            drive.followTrajectory(strafeLeft);
-        } else if (bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT){
-            drive.followTrajectory(strafeRight);
-        }
+        bot.moveBotWithEncoder(-2.5, 0.5);
 
     }
 }

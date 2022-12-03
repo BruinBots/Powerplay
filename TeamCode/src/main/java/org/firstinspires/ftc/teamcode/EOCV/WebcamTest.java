@@ -9,11 +9,18 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 @Autonomous(name = "Signal Sleeve Test")
 public class WebcamTest extends LinearOpMode {
 
     SleeveDetection sleeveDetection;
     OpenCvCamera camera;
+
+     double avgVals[] = new double[10];
+//    Queue<Double> avgVals = new LinkedList<>();
+    int count = 0;
 
     // Name of the Webcam to be set in the config
     String webcamName = "Webcam 1";
@@ -37,11 +44,37 @@ public class WebcamTest extends LinearOpMode {
             public void onError(int errorCode) {}
         });
 //
+
+
+        // used to avg colors
+        double sum = 0;
+        double avgValOverTen = 0;
+
         while (!isStarted()) {
             telemetry.addData("AvgColor: ", sleeveDetection.avgColorVal);
             telemetry.addData("Area: ", sleeveDetection.area);
             telemetry.addData("SumColors[0]", sleeveDetection.sumColorsAtZero);
+            telemetry.addData("Parking: ", sleeveDetection.getPosition());
             telemetry.update();
+
+
+            // shifts values to the right
+            for(int i = avgVals.length - 1; i > 0; i--){
+                avgVals[i] = avgVals[i - 1];
+            }
+            avgVals[0] = sleeveDetection.avgColorVal;
+
+            sum = 0;
+            for(int i = 0; i < avgVals.length; i++){
+               sum += avgVals[i];
+            }
+
+            avgValOverTen = sum / avgVals.length;
+
+            telemetry.addData("DampedAvg: ", avgValOverTen);
+
+
+
         }
 
         waitForStart();

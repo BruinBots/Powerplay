@@ -59,6 +59,9 @@ public class Karen  {
     public boolean leftSwitch;
     public boolean rightSwitch;
 
+//    public double avgOverTen = 0;
+//    public double [] avgVals = new double[10];
+
 
     // For eocv
 
@@ -183,6 +186,28 @@ public class Karen  {
         return armMotor.getCurrentPosition();
     }
 
+    public double ticksPerInch = 537.6 / 12.56; // TICKS PER REV / CIRCUMFERENCE
+
+    public void moveBotWithEncoder(double inches, double power){
+
+        double calcedTicks = ticksPerInch * inches;
+
+        leftFrontMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
+        rightFrontMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
+        leftBackMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
+        rightBackMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
+
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFrontMotor.setPower(power);
+        rightFrontMotor.setPower(power);
+        leftBackMotor.setPower(power);
+        rightBackMotor.setPower(power);
+    }
+
     public void openCam(HardwareMap map, Telemetry t){
         int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -200,6 +225,8 @@ public class Karen  {
             @Override
             public void onError(int errorCode) {}
         });
+
+
     }
 
 
@@ -211,4 +238,6 @@ public class Karen  {
 
         armMotor.setPower(0);
     }
+
+
 }
