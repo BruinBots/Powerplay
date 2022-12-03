@@ -12,6 +12,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class SleeveDetection extends OpenCvPipeline {
     Telemetry telemetry;
+    Mat mat = new Mat();
     /*
     YELLOW  = Parking Left
     CYAN    = Parking Middle
@@ -33,8 +34,8 @@ public class SleeveDetection extends OpenCvPipeline {
     private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(975, 450);
 
     // Width and height for the bounding box
-    public static int REGION_WIDTH = 1;
-    public static int REGION_HEIGHT = 1;
+    public static int REGION_WIDTH = 50;
+    public static int REGION_HEIGHT = 50;
 
     // Color definitions
     private final Scalar
@@ -44,10 +45,10 @@ public class SleeveDetection extends OpenCvPipeline {
 
     public double minRed = 150;
     public double maxRed = 180;
-    public double minPurple = 90;
-    public double maxPurple = 120;
-    public double minGreen = 40; // found by dividing enriques vals by 2
-    public double maxGreen = 70;
+    public double minPurple = 105;
+    public double maxPurple = 140;
+    public double minGreen = 15; // found by dividing enriques vals by 2
+    public double maxGreen = 45;
 
 
     // Anchor point definitions
@@ -68,13 +69,13 @@ public class SleeveDetection extends OpenCvPipeline {
         // Get the submat frame, and then sum all the values
 
         final Rect BOUNDING_BOX = new Rect(sleeve_pointA, sleeve_pointB);
-        Mat areaMat = input.submat(BOUNDING_BOX);
+        Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
+        Mat areaMat = mat.submat(BOUNDING_BOX);
 
-        Imgproc.cvtColor(input, areaMat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
         Scalar sumColors = Core.sumElems(areaMat);
 
         sumColorsAtZero = sumColors.val[0];
-        avgColorVal = sumColors.val[0] / BOUNDING_BOX.area() / 255;
+        avgColorVal = sumColors.val[0] / BOUNDING_BOX.area();
         area = BOUNDING_BOX.area();
 
 
@@ -90,18 +91,7 @@ public class SleeveDetection extends OpenCvPipeline {
         // Change the bounding box color based on the sleeve color
 
         // red == left = one dot
-        if (avgColorVal < maxRed && avgColorVal > minRed) {
-            position = ParkingPosition.LEFT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    RED,
-                    4
-            );
-
-            // green
-        } else if (avgColorVal < maxGreen && avgColorVal > minGreen) {
+        if (avgColorVal < maxGreen && avgColorVal > minGreen) {
             position = ParkingPosition.CENTER;
             Imgproc.rectangle(
                     input,
@@ -111,14 +101,25 @@ public class SleeveDetection extends OpenCvPipeline {
                     4
             );
 
-            // blue
-        } else {
+            // green
+        } else if (avgColorVal < maxPurple && avgColorVal > minPurple) {
             position = ParkingPosition.RIGHT;
             Imgproc.rectangle(
                     input,
                     sleeve_pointA,
                     sleeve_pointB,
                     BLUE,
+                    4
+            );
+
+            // blue
+        } else {
+            position = ParkingPosition.LEFT;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    RED,
                     4
             );
         }
