@@ -49,7 +49,7 @@ public class MecanumOpMode extends OpMode {
     double clawPos = 0.0;
 
     boolean lastValofX = false;
-    String seekStatus = "";
+    int seekStatus = 1;
     boolean dropped = false;
     boolean found = false;
     boolean isLastValofA = false;
@@ -143,7 +143,7 @@ public class MecanumOpMode extends OpMode {
         //hold to center
         if(gamepad1.x && !dropped){
             seekStatus = bot.center();
-            if(seekStatus.equals("found!") && !lastValofX){
+            if(seekStatus == 1 && !lastValofX){
                 //roadRunnerDrive.followTrajectory(correctAfterCetner);
                 int temp = bot.leftEncoder.getCurrentPosition();
                 while (Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 2000){
@@ -154,6 +154,16 @@ public class MecanumOpMode extends OpMode {
                 dropped = true;
             }
         }
+
+//        whileI(gamepad1.x )
+//        if(gamepad1.x){
+//            while(center() != 1){
+//
+//            }
+//        }
+
+
+
 
 
 

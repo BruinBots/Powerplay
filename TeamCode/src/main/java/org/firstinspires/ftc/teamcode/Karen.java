@@ -31,6 +31,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class Karen  {
     // Class variables
 
+    public enum State {
+        NORMAL,
+        CENTERING,
+        BACKING,
+        DROPPING
+    }
+
+    public State currentState = State.NORMAL;
+
     public DcMotorEx leftFrontMotor;
     public DcMotorEx rightFrontMotor;
     public DcMotorEx leftBackMotor;
@@ -144,30 +153,28 @@ public class Karen  {
 
     }
 
-    public String center() {
+    public int center() {
 
+        int output = 0;
 
         //true == switch activated
         leftSwitch = leftFrontSwitch.getState(); // reversed because of yes
         rightSwitch = rightFrontSwitch.getState(); // reversed because of yes
-
             if (leftSwitch && !rightSwitch) { // turn left
-                this.moveBot(0, -0.1, 0, 1);
-                return "turning left";
+                this.moveBot(0, -0.2, 0, 1);
+                return 0;
             } // right on
             else if (!leftSwitch && rightSwitch) { //turn right
-                this.moveBot(0, 0.1, 0, 1);
-                return "turning right";
+                this.moveBot(0, 0.2, 0, 1);
+                return 0;
             } // none on
             else if (!leftSwitch && !rightSwitch) { // do nothing
-                this.moveBot(0.2, 0, 0, 1);
-                return "moving forward!";
+                this.moveBot(0.15, 0, 0, 1);
+                return 0;
             } else if (leftSwitch && rightSwitch) { // break out
-                return "found!";
-
+                return 1;
             }
-
-            return "error";
+            return -1;
     }
 
 
@@ -190,22 +197,6 @@ public class Karen  {
 
     public void moveBotWithEncoder(double inches, double power){
 
-        double calcedTicks = ticksPerInch * inches;
-
-        leftFrontMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
-        rightFrontMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
-        leftBackMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
-        rightBackMotor.setTargetPosition((int)(this.getCurrentArmPos() + calcedTicks));
-
-        leftFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightFrontMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightBackMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        leftFrontMotor.setPower(power);
-        rightFrontMotor.setPower(power);
-        leftBackMotor.setPower(power);
-        rightBackMotor.setPower(power);
     }
 
     public void openCam(HardwareMap map, Telemetry t){
