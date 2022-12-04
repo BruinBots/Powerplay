@@ -30,17 +30,15 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-
-@TeleOp(name="OneController", group="Iterative Opmode")
-public class MecanumOpMode extends OpMode {
+@TeleOp(name="TwoController", group="Iterative Opmode")
+public class TwoControllerMecanumOpMode extends OpMode {
     // Declare OpMode members.
 
     double drive = 0.0;
@@ -104,17 +102,17 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
 
-        if (gamepad1.right_bumper) {
+        if (gamepad2.right_bumper) {
             clawPos = Karen.CLAW_OPEN;
             dropped = false;
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad2.left_bumper) {
             clawPos = Karen.CLAW_CLOSED;
             dropped = false;
         }
 
         //arm -----------------
-        if (gamepad1.dpad_down) { // arm down
+        if (gamepad2.dpad_down) { // arm down
             armPos -= 35; // positive due to motor rotation flipped
             // Lowest arm can go for safety,
             if (armPos < Karen.MIN_ARM_POSITION){ // 40
@@ -124,7 +122,7 @@ public class MecanumOpMode extends OpMode {
             bot.moveArm(armPos);
             armPos = bot.getCurrentArmPos();
             telemetry.addData("arm down", "");
-        } else if (gamepad1.dpad_up) {
+        } else if (gamepad2.dpad_up) {
             armPos += 35;
 
             if(armPos > Karen.MAX_ARM_POSITION){ // -365
