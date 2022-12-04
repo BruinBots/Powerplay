@@ -30,14 +30,12 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 @TeleOp(name="OneController", group="Iterative Opmode")
 public class MecanumOpMode extends OpMode {
@@ -146,7 +144,12 @@ public class MecanumOpMode extends OpMode {
         if(gamepad1.x && !dropped){
             seekStatus = bot.center();
             if(seekStatus.equals("found!") && !lastValofX){
-                roadRunnerDrive.followTrajectory(correctAfterCetner);
+                //roadRunnerDrive.followTrajectory(correctAfterCetner);
+                int temp = bot.leftEncoder.getCurrentPosition();
+                while (Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 2000){
+                    bot.moveBot(-.1,0,0,.2);
+                }
+                bot.stop();
                 clawPos = Karen.CLAW_OPEN;
                 dropped = true;
             }
