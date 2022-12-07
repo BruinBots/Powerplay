@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
 import org.firstinspires.ftc.teamcode.Karen;
@@ -55,8 +56,9 @@ public class Master_Auto extends LinearOpMode {
                 .build();
 
         Trajectory strafeLeft = drive.trajectoryBuilder(straight.end())
-                .strafeLeft(-24) // move right
+                .strafeLeft(24) // move left
                 .build();
+
 
 
 
@@ -82,16 +84,82 @@ public class Master_Auto extends LinearOpMode {
 
         waitForStart();
 
-        // drive straight first
-//        drive.followTrajectory(straight);
-//
-//        if(bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT){
-//            drive.followTrajectory(strafeLeft);
-//        } else if (bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT){
-//            drive.followTrajectory(strafeRight);
-//        }
+        // AUTO DROP CODE ----
 
-        bot.moveBotWithEncoder(-2.5, 0.5);
+//        Trajectory strafeToGround = drive.trajectoryBuilder(straight.end())
+//                .strafeRight(12) // move right
+//                .build();
+//
+//        drive.followTrajectory(strafeToGround);
+//
+//        ElapsedTime runTime = new ElapsedTime();
+//        runTime.reset();
+//        int centerTemp = 0;
+//
+//        bot.currentState = Karen.State.CENTERING;
+//
+//
+//        // centering loop
+//        while(bot.currentState == Karen.State.CENTERING && !isStopRequested()){
+//            centerTemp = bot.center(runTime);
+//            if (centerTemp == 1){
+//                bot.currentState = Karen.State.BACKING; // just to break out of loop
+//            }
+//        }
+//
+//
+//        // backing up loop
+//        int temp = bot.leftEncoder.getCurrentPosition();
+//        while ((Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 3500) && !isStopRequested()){ // 2000 arbitrary, about quarter of wheel spin
+//            bot.moveBot(-.15,0,0,1);
+//        }
+//
+//        // open the claw
+//        bot.clawServo.setPosition(bot.CLAW_OPEN);
+//
+//        Trajectory backupAfterDrop = drive.trajectoryBuilder(straight.end())
+//                .back(5) // backup
+//                .build();
+//
+//        drive.followTrajectory(backupAfterDrop);
+//
+//
+//        // parking strafe movement
+//        if(bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT){
+//            Trajectory strafeLeftAfterDrop = drive.trajectoryBuilder(straight.end())
+//                    .strafeLeft(36) // backup
+//                    .build();
+//        } else if (bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT) {
+//            Trajectory strafeRightAfterDrop = drive.trajectoryBuilder(straight.end())
+//                    .strafeRight(12) // backup
+//                    .build();
+//        } else /* center is fail case */ {
+//            Trajectory strafeLeftAfterDrop = drive.trajectoryBuilder(straight.end())
+//                    .strafeLeft(12) // backup
+//                    .build();
+//        }
+//
+//        Trajectory forward = drive.trajectoryBuilder(straight.end())
+//                .forward(36) // backup
+//                .build();
+//
+//        drive.followTrajectory(forward);
+
+        // AUTO DROP CODE -----
+
+
+
+        //drive straight first, then do corrections
+
+        SleeveDetection.ParkingPosition parkZone = bot.sleeveDetection.getPosition(); // default go right
+        telemetry.addData("Parking: ", parkZone);
+        drive.followTrajectory(straight);
+
+        if(parkZone == SleeveDetection.ParkingPosition.LEFT){
+            drive.followTrajectory(strafeLeft);
+        } else if (parkZone == SleeveDetection.ParkingPosition.RIGHT){
+            drive.followTrajectory(strafeRight);
+        }
 
     }
 }

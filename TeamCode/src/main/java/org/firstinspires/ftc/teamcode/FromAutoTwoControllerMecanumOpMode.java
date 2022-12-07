@@ -38,10 +38,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-import dalvik.system.DelegateLastClassLoader;
+@TeleOp(name="FROM_AUTO_TwoController", group="Iterative Opmode")
+public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
-@TeleOp(name="OneController", group="Iterative Opmode")
-public class MecanumOpMode extends OpMode {
     // Declare OpMode members.
 
     double drive = 0.0;
@@ -52,14 +51,16 @@ public class MecanumOpMode extends OpMode {
     double clawPos = 0.0;
 
     boolean lastValofX = false;
-    int seekStatus = 1;
+    String seekStatus = "";
     boolean dropped = false;
     boolean found = false;
     boolean isLastValofA = false;
+    boolean switchToBacking = false;
 
     ElapsedTime runTime = new ElapsedTime();
 
     int armPos;
+    int centerTemp = 0;
 
     Karen bot;
 
@@ -71,7 +72,8 @@ public class MecanumOpMode extends OpMode {
     @Override
     public void init() {
 
-        bot = new Karen(hardwareMap);
+
+        bot = new Karen(hardwareMap, true);
         telemetry.addData("Status", "Initialized");
         armPos = bot.armMotor.getCurrentPosition();
 
@@ -97,9 +99,9 @@ public class MecanumOpMode extends OpMode {
     //
     @Override
     public void loop() {
-        drive = -gamepad1.left_stick_y * 0.5;
-        strafe = gamepad1.left_stick_x * 0.5;
-        turn = gamepad1.right_stick_x * 0.5;
+        drive = -gamepad1.left_stick_y * 0.65;
+        strafe = gamepad1.left_stick_x * 0.65;
+        turn = gamepad1.right_stick_x * 0.8;
 
         bot.moveBot(drive, turn, strafe, 0.8);
 
@@ -108,17 +110,19 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
 
-        if (gamepad1.right_bumper) {
+        if (gamepad2.right_bumper) {
             clawPos = Karen.CLAW_OPEN;
             dropped = false;
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad2.left_bumper) {
             clawPos = Karen.CLAW_CLOSED;
             dropped = false;
         }
 
         //arm -----------------
-        if (gamepad1.dpad_down) { // arm down
+
+        // assume arm starts all the way up
+        if (gamepad2.dpad_down) { // arm down
             armPos -= 35; // positive due to motor rotation flipped
             // Lowest arm can go for safety,
             if (armPos < Karen.MIN_ARM_POSITION){ // 40
@@ -128,7 +132,7 @@ public class MecanumOpMode extends OpMode {
             bot.moveArm(armPos);
             armPos = bot.getCurrentArmPos();
             telemetry.addData("arm down", "");
-        } else if (gamepad1.dpad_up) {
+        } else if (gamepad2.dpad_up) {
             armPos += 35;
 
             if(armPos > Karen.MAX_ARM_POSITION){ // -365
@@ -147,31 +151,44 @@ public class MecanumOpMode extends OpMode {
 
 
         //hold to center
-        if(gamepad1.x && !dropped){
-            seekStatus = bot.center(runTime);
-            if(seekStatus == 1 && !lastValofX){
-                //roadRunnerDrive.followTrajectory(correctAfterCetner);
-                int temp = bot.leftEncoder.getCurrentPosition();
-                while (Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 2000){
-                    bot.moveBot(-.1,0,0,.2);
-                }
-                bot.stop();
-                clawPos = Karen.CLAW_OPEN;
-                dropped = true;
-            }
-        }
-
-//        whileI(gamepad1.x )
-//        if(gamepad1.x){
-//            while(center() != 1){
-//
+//        if(gamepad1.x && !dropped){
+//            seekStatus = bot.center();
+//            if(seekStatus.equals("found!") && !lastValofX){
+//                roadRunnerDrive.followTrajectory(correctAfterCetner);
+//                clawPos = Karen.CLAW_OPEN;
+//                dropped = true;
 //            }
 //        }
 
+        if(gamepad1.x && !lastValofX) // last val since only exec once
+            bot.currentState = Karen.State.CENTERING;
+        else if (!gamepad1.x)
+            bot.currentState = Karen.State.NORMAL;
 
+        if(bot.currentState == Karen.State.CENTERING) {
+            switchToBacking = false;
+            centerTemp = bot.center(runTime);
+            if(centerTemp == 1) {
+                bot.currentState = Karen.State.BACKING;
+            }
 
+        }
 
+        if(bot.currentState == Karen.State.BACKING && !switchToBacking){
+            int temp = bot.leftEncoder.getCurrentPosition();
+            while ((Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 3500) && gamepad1.x){ // 2000 arbitrary, about quarter of wheel spin
+                bot.moveBot(-.15,0,0,1);
+            }
 
+            switchToBacking = true;
+            bot.currentState = Karen.State.DROPPING;
+        }
+
+        // dropp the thang!
+        if(bot.currentState == Karen.State.DROPPING){
+            clawPos = bot.CLAW_OPEN;
+            bot.currentState = Karen.State.NORMAL;
+        }
 
         if (gamepad2.a && !isLastValofA){
             roadRunnerDrive.followTrajectory(correctAfterCetner);
@@ -189,6 +206,8 @@ public class MecanumOpMode extends OpMode {
 
         bot.clawServo.setPosition(clawPos);
 
+        telemetry.addData("Time: ", runTime.time());
+        telemetry.addData("STATE: ", bot.currentState);
         telemetry.addData("Servo: ", clawPos);
         telemetry.addData("armPos:", bot.getCurrentArmPos());
 
@@ -196,15 +215,17 @@ public class MecanumOpMode extends OpMode {
         telemetry.addData("rightOdo: ", bot.rightEncoder.getCurrentPosition());
         telemetry.addData("backOdo: ", bot.frontEncoder.getCurrentPosition());
        // telemetry.addData("leftMotor", bot.leftFrontMotor.getPower());
-        telemetry.addData("leftEncoder", bot.leftEncoder.getCurrentPosition());
-        telemetry.addData("rightEncoder", bot.rightEncoder.getCurrentPosition());
-        telemetry.addData("frontEncoder", bot.frontEncoder.getCurrentPosition());
-        telemetry.addData("leftEncoderCorVel", bot.leftEncoder.getCorrectedVelocity());
-        telemetry.addData("rightEncoderCorVel", bot.rightEncoder.getCorrectedVelocity());
-        telemetry.addData("frontEncoderCorVel", bot.frontEncoder.getCorrectedVelocity());
-        telemetry.addData("leftEncoderRawVel", bot.leftEncoder.getRawVelocity());
-        telemetry.addData("rightEncoderRawVel", bot.rightEncoder.getRawVelocity());
-        telemetry.addData("frontEncoderRawVel", bot.frontEncoder.getRawVelocity());
+//        telemetry.addData("leftEncoder", bot.leftEncoder.getCurrentPosition());
+//        telemetry.addData("rightEncoder", bot.rightEncoder.getCurrentPosition());
+//        telemetry.addData("frontEncoder", bot.frontEncoder.getCurrentPosition());
+//        telemetry.addData("leftEncoderCorVel", bot.leftEncoder.getCorrectedVelocity());
+//        telemetry.addData("rightEncoderCorVel", bot.rightEncoder.getCorrectedVelocity());
+//        telemetry.addData("frontEncoderCorVel", bot.frontEncoder.getCorrectedVelocity());
+//        telemetry.addData("leftEncoderRawVel", bot.leftEncoder.getRawVelocity());
+//        telemetry.addData("rightEncoderRawVel", bot.rightEncoder.getRawVelocity());
+//        telemetry.addData("frontEncoderRawVel", bot.frontEncoder.getRawVelocity());
+
+
     }
 
 

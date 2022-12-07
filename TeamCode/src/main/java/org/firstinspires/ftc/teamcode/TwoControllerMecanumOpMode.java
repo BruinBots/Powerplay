@@ -34,8 +34,11 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+import dalvik.system.DelegateLastClassLoader;
 
 @TeleOp(name="TwoController", group="Iterative Opmode")
 public class TwoControllerMecanumOpMode extends OpMode {
@@ -55,6 +58,8 @@ public class TwoControllerMecanumOpMode extends OpMode {
     boolean isLastValofA = false;
     boolean switchToBacking = false;
 
+    ElapsedTime runTime = new ElapsedTime();
+
     int armPos;
     int centerTemp = 0;
 
@@ -67,6 +72,7 @@ public class TwoControllerMecanumOpMode extends OpMode {
     //
     @Override
     public void init() {
+
 
         bot = new Karen(hardwareMap);
         telemetry.addData("Status", "Initialized");
@@ -88,6 +94,7 @@ public class TwoControllerMecanumOpMode extends OpMode {
     //
     @Override
     public void start() {
+        runTime.reset();
     }
 
     //
@@ -114,6 +121,8 @@ public class TwoControllerMecanumOpMode extends OpMode {
         }
 
         //arm -----------------
+
+        // assume arm starts all the way up
         if (gamepad2.dpad_down) { // arm down
             armPos -= 35; // positive due to motor rotation flipped
             // Lowest arm can go for safety,
@@ -159,7 +168,7 @@ public class TwoControllerMecanumOpMode extends OpMode {
 
         if(bot.currentState == Karen.State.CENTERING) {
             switchToBacking = false;
-            centerTemp = bot.center();
+            centerTemp = bot.center(runTime);
             if(centerTemp == 1) {
                 bot.currentState = Karen.State.BACKING;
             }

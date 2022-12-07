@@ -22,6 +22,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -57,8 +58,9 @@ public class Karen  {
 
     public DigitalChannel leftOdoWheel;
 
-    public static int MAX_ARM_POSITION = 270;
-    public static int MIN_ARM_POSITION = 0;
+    // this is assuming that the arm starts up, and that position is set to 0 at the start
+    public static int MAX_ARM_POSITION = 20;
+    public static int MIN_ARM_POSITION = -310;
 
     public static double CLAW_OPEN = 0.5;
     public static double CLAW_CLOSED = 0.0;
@@ -123,6 +125,51 @@ public class Karen  {
         rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
+    public Karen (HardwareMap map, boolean fromAuto) {
+        // Drivetrain Motors
+        leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
+        rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
+        leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
+        rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
+
+        leftBackMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        // Encoders
+        leftEncoder = new Encoder(map.get(DcMotorEx.class, "leftFrontMotor"));
+        rightEncoder = new Encoder(map.get(DcMotorEx.class, "rightFrontMotor"));
+        //leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
+        frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
+
+        // arm assembly
+        armMotor = map.get(DcMotorEx.class, "armMotor");
+        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // not resetting the position because it is from auto
+        //armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        clawServo = map.get(Servo.class, "clawServo");
+
+//        backOdoWheel = map.get(Encoder.class, );
+//        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
+//        rightOdoWheel =;
+
+        //left odo wheel
+        leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //right odo wheel
+        rightFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFrontMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // back odo wheel
+        leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Front Switches
+        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+    }
+
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
         double[] wheelSpeeds = new double[4];
         wheelSpeeds[0] = drive + strafe + rotate;  // left front
@@ -153,23 +200,28 @@ public class Karen  {
 
     }
 
-    public int center() {
+    // movebot command that runs for a certain amount of time
+    public void moveBotTimer(double drive, double rotate, double strafe, int time, ElapsedTime runTime){
+        while(((int)(runTime.time() * 1000)) < time){
+            this.moveBot(drive, rotate, strafe, 1);
+        }
+    }
 
+    public int center(ElapsedTime runTime) {
+        runTime.reset();
         int output = 0;
 
         //true == switch activated
         leftSwitch = leftFrontSwitch.getState(); // reversed because of yes
         rightSwitch = rightFrontSwitch.getState(); // reversed because of yes
             if (leftSwitch && !rightSwitch) { // turn left
-                this.moveBot(0, -0.2, 0, 1);
-                return 0;
+                this.moveBotTimer(-0.1, 0, -0.1, 50, runTime);
             } // right on
             else if (!leftSwitch && rightSwitch) { //turn right
-                this.moveBot(0, 0.2, 0, 1);
-                return 0;
+                this.moveBotTimer(-0.1, 0, 0.1, 50, runTime);
             } // none on
             else if (!leftSwitch && !rightSwitch) { // do nothing
-                this.moveBot(0.15, 0, 0, 1);
+                this.moveBot(0.2, 0, 0, 1);
                 return 0;
             } else if (leftSwitch && rightSwitch) { // break out
                 return 1;
