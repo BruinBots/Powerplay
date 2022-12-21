@@ -27,9 +27,9 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
 
     Mat cameraMatrix;
 
-    public int ID_1 = 11;
-    public int ID_2 = 22;
-    public int ID_3 = 33;
+    public int ID_1 = 0;
+    public int ID_2 = 1;
+    public int ID_3 = 2;
 
     Scalar blue = new Scalar(7,197,235,255);
     Scalar red = new Scalar(255,0,0,255);
