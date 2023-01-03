@@ -5,6 +5,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.imgproc.Imgproc;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -53,11 +54,21 @@ public class EzraTest extends LinearOpMode {
 
     // This method applies a mask to the input image and returns the resulting image
     public Mat applyMask(Mat image) {
-        // Create a mask with all values set to 0
-        Mat mask = new Mat(image.rows(), image.cols(), image.type(), new Scalar(0));
+        Mat hsvImage = new Mat();
+        Mat mask = new Mat();
+
+        // Convert the image to the HSV color space
+        Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_BGR2HSV);
+
+        // Set the lower and upper bounds for the colors you want to keep
+        Scalar lowerBound = new Scalar(0, 100, 100);
+        Scalar upperBound = new Scalar(10, 255, 255);
+
+        // Use the inRange function to create a mask for the colors within the bounds
+        Core.inRange(hsvImage, lowerBound, upperBound, mask);
 
         // Apply the mask to the image
-        Core.bitwise_and(image, mask, image);
+        Core.bitwise_and(image, image, image, mask);
 
         return image;
     }
