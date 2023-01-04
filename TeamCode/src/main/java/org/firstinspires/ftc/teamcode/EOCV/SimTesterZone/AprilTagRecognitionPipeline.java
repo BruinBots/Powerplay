@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.EOCV.SimTesterZone;
 
 //import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -46,29 +47,33 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
     Scalar green = new Scalar(0,255,0,255);
     Scalar white = new Scalar(255,255,255,255);
 
-    double fx;
-    double fy;
-    double cx;
-    double cy;
+    double fx = 8;
+    double fy = 8;
+    double cx = 0;
+    double cy = 0;
 
     // in meters
-    double tagsize;
+    double tagsize = 8;
     double tagsizeX;
     double tagsizeY;
+
+    Telemetry telemetry;
 
     private float decimation;
     private boolean needToSetDecimation;
     private final Object decimationSync = new Object();
 
-    public AprilTagRecognitionPipeline(double tagsize, double fx, double fy, double cx, double cy)
+    public AprilTagRecognitionPipeline(Telemetry t)
     {
-        this.tagsize = tagsize;
+
+        this.telemetry = t;
+//        this.tagsize = tagsize;
         this.tagsizeX = tagsize;
         this.tagsizeY = tagsize;
-        this.fx = fx;
-        this.fy = fy;
-        this.cx = cx;
-        this.cy = cy;
+//        this.fx = fx;
+//        this.fy = fy;
+//        this.cx = cx;
+//        this.cy = cy;
 
         constructMatrix();
 
@@ -109,6 +114,11 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
 
         // Run AprilTag
         detections = AprilTagDetectorJNI.runAprilTagDetectorSimple(nativeApriltagPtr, grey, tagsize, fx, fy, cx, cy);
+
+        telemetry.addData("Detections", detections.size() + "");
+        if (detections.size() > 0) {
+            telemetry.addData("ID", detections.get(0).id + "");
+        }
 
         synchronized (detectionsUpdateSync)
         {
@@ -304,17 +314,18 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
     }
 
     public AprilTagRecognitionPipeline.ParkingPosition getPosition() {
-        if (detections.size() == 0) {
-            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
-        }
-        else if (detections.get(0).id == ID_1) {
-            return AprilTagRecognitionPipeline.ParkingPosition.LEFT;
-        }
-        else if (detections.get(0).id == ID_2) {
-            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
-        }
-        else {
-            return AprilTagRecognitionPipeline.ParkingPosition.RIGHT;
-        }
+//        if (detections.size() == 0) {
+//            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
+//        }
+//        else if (detections.get(0).id == ID_1) {
+//            return AprilTagRecognitionPipeline.ParkingPosition.LEFT;
+//        }
+//        else if (detections.get(0).id == ID_2) {
+//            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
+//        }
+//        else {
+//            return AprilTagRecognitionPipeline.ParkingPosition.RIGHT;
+//        }
+        return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
     }
 }
