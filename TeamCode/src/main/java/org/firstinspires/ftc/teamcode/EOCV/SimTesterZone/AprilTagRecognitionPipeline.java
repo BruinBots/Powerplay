@@ -1,4 +1,6 @@
-import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
+package org.firstinspires.ftc.teamcode.EOCV.SimTesterZone;
+
+//import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -23,7 +25,15 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
     private ArrayList<AprilTagDetection> detectionsUpdate = new ArrayList<>();
     private final Object detectionsUpdateSync = new Object();
 
-    private volatile SleeveDetection.ParkingPosition position = SleeveDetection.ParkingPosition.LEFT;
+    public enum ParkingPosition {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
+//    private volatile SleeveDetection.ParkingPosition position = SleeveDetection.ParkingPosition.LEFT;
+
+    private volatile AprilTagRecognitionPipeline.ParkingPosition position = AprilTagRecognitionPipeline.ParkingPosition.LEFT;
 
     Mat cameraMatrix;
 
@@ -293,18 +303,18 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
         }
     }
 
-    public SleeveDetection.ParkingPosition getPosition() {
+    public AprilTagRecognitionPipeline.ParkingPosition getPosition() {
         if (detections.size() == 0) {
-            return SleeveDetection.ParkingPosition.CENTER;
+            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
         }
         else if (detections.get(0).id == ID_1) {
-            return SleeveDetection.ParkingPosition.LEFT;
+            return AprilTagRecognitionPipeline.ParkingPosition.LEFT;
         }
         else if (detections.get(0).id == ID_2) {
-            return SleeveDetection.ParkingPosition.CENTER;
+            return AprilTagRecognitionPipeline.ParkingPosition.CENTER;
         }
         else {
-            return SleeveDetection.ParkingPosition.RIGHT;
+            return AprilTagRecognitionPipeline.ParkingPosition.RIGHT;
         }
     }
 }
