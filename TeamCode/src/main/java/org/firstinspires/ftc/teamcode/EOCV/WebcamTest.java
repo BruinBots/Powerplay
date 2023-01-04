@@ -4,13 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.EOCV.SleeveDetection;
+import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 @Autonomous(name = "Signal Sleeve Test")
 public class WebcamTest extends LinearOpMode {

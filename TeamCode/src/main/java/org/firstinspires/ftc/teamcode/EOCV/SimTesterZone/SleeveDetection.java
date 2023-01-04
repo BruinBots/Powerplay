@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.EOCV;
+package org.firstinspires.ftc.teamcode.EOCV.SimTesterZone;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -29,13 +29,16 @@ public class SleeveDetection extends OpenCvPipeline {
     public double area;
     public double sumColorsAtZero;
 
+    public double greenPerc;
+    public double purplePerc;
+
 
     // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(653, 23);
+    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(1000, 500);
 
     // Width and height for the bounding box
     public static int REGION_WIDTH = 70;
-    public static int REGION_HEIGHT = 150;
+    public static int REGION_HEIGHT = 100;
 
     // Color definitions
     private final Scalar
@@ -49,6 +52,14 @@ public class SleeveDetection extends OpenCvPipeline {
     public double maxPurple = 140;
     public double minGreen = 15; // found by dividing enriques vals by 2
     public double maxGreen = 45;
+
+    Scalar lowGreenHSV = new Scalar(15, 10, 10);
+    Scalar highGreenHSV = new Scalar(45, 255, 255);
+
+    Scalar lowPurpleHSV = new Scalar(105, 10, 10);
+    Scalar highPurpleHSV = new Scalar(140, 255, 255);
+
+
 
 
     // Anchor point definitions
@@ -71,6 +82,25 @@ public class SleeveDetection extends OpenCvPipeline {
         final Rect BOUNDING_BOX = new Rect(sleeve_pointA, sleeve_pointB);
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV); //  converting to hsv
         Mat areaMat = mat.submat(BOUNDING_BOX);
+
+
+        // making three different mats, going to mask each on with inval
+        Mat redAreaMat = mat.submat(BOUNDING_BOX);
+        Mat greenAreaMat = mat.submat(BOUNDING_BOX);
+        Mat blueAreaMat = mat.submat(BOUNDING_BOX);
+
+        Core.inRange(greenAreaMat, lowGreenHSV, highGreenHSV, greenAreaMat);
+        Core.inRange(blueAreaMat, lowPurpleHSV, highPurpleHSV, blueAreaMat);
+
+//        greenPerc = Core.sumElems(greenAreaMat).val[0];
+//        purplePerc = Core.sumElems(blueAreaMat).val[0];
+
+        double greenPerc = Core.sumElems(greenAreaMat).val[0] / BOUNDING_BOX.area() / 255;
+        double purplePerc = Core.sumElems(blueAreaMat).val[0] / BOUNDING_BOX.area() / 255;
+
+        telemetry.addData("greenPerc ", greenPerc);
+        telemetry.addData("purplePerc: ", purplePerc);
+
 
         Scalar sumColors = Core.sumElems(areaMat);
 
