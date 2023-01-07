@@ -34,6 +34,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -46,6 +50,8 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     double drive = 0.0;
     double turn = 0.0;
     double strafe = 0.0;
+
+    int linearSlide = 0;
 
     double armPower = 0.0;
     double clawPos = 0.0;
@@ -73,21 +79,28 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     public void init() {
 
 
-        bot = new Karen(hardwareMap, true);
+        bot = new Karen(hardwareMap);
         telemetry.addData("Status", "Initialized");
-        armPos = bot.armMotor.getCurrentPosition();
+       // armPos = bot.armMotor.getCurrentPosition();
 
         roadRunnerDrive = new SampleMecanumDrive(hardwareMap);
 
         correctAfterCetner = roadRunnerDrive.trajectoryBuilder(new Pose2d())
                 .back(2.5)
                 .build();
+
+
+        int motorIndex = ((bot.slideMotor).getPortNumber());
+        DcMotorControllerEx motorController = (DcMotorControllerEx)bot.slideMotor.getController();
+        PIDFCoefficients pidNew = new PIDFCoefficients(10, 1, 3, 0);
+        motorController.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+        bot.slideMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
     }
 
     //
     @Override
     public void init_loop() {
-        armPos = bot.armMotor.getCurrentPosition();
+        //armPos = bot.armMotor.getCurrentPosition();
     }
 
     //
@@ -106,46 +119,93 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         bot.moveBot(drive, turn, strafe, 0.8);
 
 
-        telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
-        telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
+        //telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
+        //telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
 
         if (gamepad2.right_bumper) {
             clawPos = Karen.CLAW_OPEN;
+            //clawPos += 0.001;
             dropped = false;
         }
         if (gamepad2.left_bumper) {
             clawPos = Karen.CLAW_CLOSED;
+            //clawPos -= 0.001;
             dropped = false;
         }
 
         //arm -----------------
 
         // assume arm starts all the way up
-        if (gamepad2.dpad_down) { // arm down
-            armPos -= 35; // positive due to motor rotation flipped
-            // Lowest arm can go for safety,
-            if (armPos < Karen.MIN_ARM_POSITION){ // 40
-                armPos = Karen.MIN_ARM_POSITION;
+//        if (gamepad2.dpad_down) { // arm down
+//            armPos -= 35; // positive due to motor rotation flipped
+//            // Lowest arm can go for safety,
+//            if (armPos < Karen.MIN_ARM_POSITION){ // 40
+//                armPos = Karen.MIN_ARM_POSITION;
+//            }
+//
+//            bot.moveArm(armPos);
+//            armPos = bot.getCurrentArmPos();
+//            telemetry.addData("arm down", "");
+//        } else if (gamepad2.dpad_up) {
+//            armPos += 35;
+//
+//            if(armPos > Karen.MAX_ARM_POSITION){ // -365
+//                armPos = Karen.MAX_ARM_POSITION;
+//            }
+//
+//            bot.moveArm(armPos);
+//            armPos = bot.getCurrentArmPos();
+//            telemetry.addData("arm up", "");
+//        } else {
+//            bot.moveArm(armPos);
+//            telemetry.addData("arm still", "");
+//        }
+
+
+        int MotorIndex = ((bot.slideMotor).getPortNumber());
+        PIDCoefficients pidNew = new PIDCoefficients(10, 1, 3);
+        bot.slideMotor.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+        if (gamepad2.dpad_up) {
+            // bounds for encoder target
+            if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
+                linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
             }
-
-            bot.moveArm(armPos);
-            armPos = bot.getCurrentArmPos();
-            telemetry.addData("arm down", "");
-        } else if (gamepad2.dpad_up) {
-            armPos += 35;
-
-            if(armPos > Karen.MAX_ARM_POSITION){ // -365
-                armPos = Karen.MAX_ARM_POSITION;
+            else {
+                linearSlide += 10;
             }
-
-            bot.moveArm(armPos);
-            armPos = bot.getCurrentArmPos();
-            telemetry.addData("arm up", "");
-        } else {
-            bot.moveArm(armPos);
-            telemetry.addData("arm still", "");
         }
+
+        // move down unless button is clicked
+        else if (gamepad2.dpad_down && bot.getSlideButton()) {
+
+            //bounds for encoder target
+            if (linearSlide < Karen.MIN_LINEAR_SLIDE_POSITION) {
+                linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
+            }
+            else {
+                linearSlide -= 10;
+            }
+        }
+
+        // all the way down for collection
+        else if (gamepad1.a) {
+            linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
+        }
+
+        // transit/ground junction, little bit off the ground to avoid contact
+        else if (gamepad1.b) {
+            linearSlide = Karen.TRANSIT_LINEAR_SLIDE_POSITION;
+        }
+        // all the way up for low pole scoring
+        else if (gamepad1.y) {
+            linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
+        }
+
+        telemetry.addData("slide button: ", bot.getSlideButton());
+
+
+        bot.moveLinearSlide(linearSlide);
 
 
 
@@ -190,10 +250,10 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
             bot.currentState = Karen.State.NORMAL;
         }
 
-        if (gamepad2.a && !isLastValofA){
-            roadRunnerDrive.followTrajectory(correctAfterCetner);
-            clawPos = bot.CLAW_OPEN;
-        }
+//        if (gamepad2.a && !isLastValofA){
+//            roadRunnerDrive.followTrajectory(correctAfterCetner);
+//            clawPos = bot.CLAW_OPEN;
+//        }
 
         isLastValofA = gamepad2.a;
 
@@ -208,8 +268,13 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         telemetry.addData("Time: ", runTime.time());
         telemetry.addData("STATE: ", bot.currentState);
-        telemetry.addData("Servo: ", clawPos);
-        telemetry.addData("armPos:", bot.getCurrentArmPos());
+        telemetry.addData("Target Servo: ", clawPos);
+        telemetry.addData("acc Claw Pos: ", bot.clawServo.getPosition());
+        // telemetry.addData("armPos:", bot.getCurrentArmPos());
+
+        telemetry.addData("Actual Slide: ", bot.getSlidePos());
+        telemetry.addData("Target Slide: ", linearSlide);
+        telemetry.addData("HardStop: ", bot.getSlideButton());
 
         telemetry.addData("leftOdo: ", bot.leftEncoder.getCurrentPosition());
         telemetry.addData("rightOdo: ", bot.rightEncoder.getCurrentPosition());

@@ -38,6 +38,18 @@ public class Karen  {
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
 
+    public DcMotorEx slideMotor;
+
+    public static final int MAX_LINEAR_SLIDE_POSITION = 1850;
+    public static final int MIN_LINEAR_SLIDE_POSITION = 0;
+    public static final int TRANSIT_LINEAR_SLIDE_POSITION = 100;
+
+   // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
+    public static final int LOW_LINEAR_SLIDE_POSITION = 900;
+
+    public static final double LINEAR_SLIDE_POWER = 0.2;
+    public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
+
     public Encoder leftEncoder;
     public Encoder rightEncoder;
     public Encoder frontEncoder;
@@ -54,13 +66,15 @@ public class Karen  {
     public static int MAX_ARM_POSITION = 20;
     public static int MIN_ARM_POSITION = -310;
 
-    public static double CLAW_OPEN = 0.5;
+    public static double CLAW_OPEN = 0.3;
     public static double CLAW_CLOSED = 0.0;
 
     public static double ARM_POWER = 0.95;
 
     public boolean leftSwitch;
     public boolean rightSwitch;
+
+    public DigitalChannel slideHardStop;
 
 //    public double avgOverTen = 0;
 //    public double [] avgVals = new double[10];
@@ -75,6 +89,7 @@ public class Karen  {
 
     // constructor with map
     public Karen (HardwareMap map) {
+        slideHardStop = map.get(DigitalChannel.class, "slideBottomButton");
         // Drivetrain Motors
         leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
@@ -89,12 +104,18 @@ public class Karen  {
         //leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
-        // arm assembly
-        armMotor = map.get(DcMotorEx.class, "armMotor");
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+
+        // arm assembly --OLD--
+//        armMotor = map.get(DcMotorEx.class, "armMotor");
+//        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");
+
+        slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 //        backOdoWheel = map.get(Encoder.class, );
 //        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
@@ -113,11 +134,13 @@ public class Karen  {
         leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Front Switches
-        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+        // leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+        // rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public Karen (HardwareMap map, boolean fromAuto) {
+        slideHardStop = map.get(DigitalChannel.class, "slideBottomButton");
+        slideHardStop.setMode(DigitalChannel.Mode.INPUT);
         // Drivetrain Motors
         leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
@@ -133,14 +156,18 @@ public class Karen  {
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
         // arm assembly
-        armMotor = map.get(DcMotorEx.class, "armMotor");
-        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        armMotor = map.get(DcMotorEx.class, "armMotor");
+//        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // not resetting the position because it is from auto
         //armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");
 
+        slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 //        backOdoWheel = map.get(Encoder.class, );
 //        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
 //        rightOdoWheel =;
@@ -158,8 +185,8 @@ public class Karen  {
         leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Front Switches
-        leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+        // leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
+        // rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -233,6 +260,23 @@ public class Karen  {
         armMotor.setPower(ARM_POWER);
     }
 
+    public void moveLinearSlide(int ticks) {
+        if (ticks > MAX_LINEAR_SLIDE_POSITION) {
+            ticks = MAX_LINEAR_SLIDE_POSITION;
+        }
+        else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
+            ticks = MIN_LINEAR_SLIDE_POSITION;
+        }
+        slideMotor.setTargetPosition(ticks);
+        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
+            slideMotor.setPower(LINEAR_SLIDE_POWER);
+        }
+        else {
+            slideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
+        }
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
     public int getCurrentArmPos(){
         return armMotor.getCurrentPosition();
     }
@@ -242,6 +286,8 @@ public class Karen  {
     public void moveBotWithEncoder(double inches, double power){
 
     }
+
+
 
     public void openCam(HardwareMap map, Telemetry t){
         int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
@@ -271,7 +317,15 @@ public class Karen  {
         rightFrontMotor.setPower(0);
         rightBackMotor.setPower(0);
 
-        armMotor.setPower(0);
+        slideMotor.setPower(0);
+    }
+
+    public boolean getSlideButton(){
+        return slideHardStop.getState();
+    }
+
+    public int getSlidePos(){
+        return slideMotor.getCurrentPosition();
     }
 
 
