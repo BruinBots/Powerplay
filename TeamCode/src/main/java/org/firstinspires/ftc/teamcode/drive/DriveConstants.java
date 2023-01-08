@@ -45,7 +45,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // gobuilda mecanum radius from rr gen
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 12.5 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5, ayaan chnaged to 10.5 because center to center
+    public static double TRACK_WIDTH = 10.75 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5, ayaan chnaged to 10.5 because center to center
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using

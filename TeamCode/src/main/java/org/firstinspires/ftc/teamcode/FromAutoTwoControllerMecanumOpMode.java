@@ -90,11 +90,11 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
                 .build();
 
 
-        int motorIndex = ((bot.slideMotor).getPortNumber());
-        DcMotorControllerEx motorController = (DcMotorControllerEx)bot.slideMotor.getController();
-        PIDFCoefficients pidNew = new PIDFCoefficients(10, 1, 3, 0);
-        motorController.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
-        bot.slideMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+//        int motorIndex = ((bot.slideMotor).getPortNumber());
+//        DcMotorControllerEx motorController = (DcMotorControllerEx)bot.slideMotor.getController();
+//        PIDFCoefficients pidNew = new PIDFCoefficients(10, 1, 3, 0);
+//        motorController.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+//        bot.slideMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
     }
 
     //
@@ -163,9 +163,6 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        }
 
 
-        int MotorIndex = ((bot.slideMotor).getPortNumber());
-        PIDCoefficients pidNew = new PIDCoefficients(10, 1, 3);
-        bot.slideMotor.setPIDCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
         if (gamepad2.dpad_up) {
             // bounds for encoder target
             if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
@@ -220,35 +217,35 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //            }
 //        }
 
-        if(gamepad1.x && !lastValofX) // last val since only exec once
-            bot.currentState = Karen.State.CENTERING;
-        else if (!gamepad1.x)
-            bot.currentState = Karen.State.NORMAL;
+//        if(gamepad1.x && !lastValofX) // last val since only exec once
+//            bot.currentState = Karen.State.CENTERING;
+//        else if (!gamepad1.x)
+//            bot.currentState = Karen.State.NORMAL;
+//
+//        if(bot.currentState == Karen.State.CENTERING) {
+//            switchToBacking = false;
+//            centerTemp = bot.center(runTime);
+//            if(centerTemp == 1) {
+//                bot.currentState = Karen.State.BACKING;
+//            }
+//
+//        }
 
-        if(bot.currentState == Karen.State.CENTERING) {
-            switchToBacking = false;
-            centerTemp = bot.center(runTime);
-            if(centerTemp == 1) {
-                bot.currentState = Karen.State.BACKING;
-            }
-
-        }
-
-        if(bot.currentState == Karen.State.BACKING && !switchToBacking){
-            int temp = bot.leftEncoder.getCurrentPosition();
-            while ((Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 3500) && gamepad1.x){ // 2000 arbitrary, about quarter of wheel spin
-                bot.moveBot(-.15,0,0,1);
-            }
-
-            switchToBacking = true;
-            bot.currentState = Karen.State.DROPPING;
-        }
-
-        // dropp the thang!
-        if(bot.currentState == Karen.State.DROPPING){
-            clawPos = bot.CLAW_OPEN;
-            bot.currentState = Karen.State.NORMAL;
-        }
+//        if(bot.currentState == Karen.State.BACKING && !switchToBacking){
+//            int temp = bot.leftEncoder.getCurrentPosition();
+//            while ((Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 3500) && gamepad1.x){ // 2000 arbitrary, about quarter of wheel spin
+//                bot.moveBot(-.15,0,0,1);
+//            }
+//
+//            switchToBacking = true;
+//            bot.currentState = Karen.State.DROPPING;
+//        }
+//
+//        // dropp the thang!
+//        if(bot.currentState == Karen.State.DROPPING){
+//            clawPos = bot.CLAW_OPEN;
+//            bot.currentState = Karen.State.NORMAL;
+//        }
 
 //        if (gamepad2.a && !isLastValofA){
 //            roadRunnerDrive.followTrajectory(correctAfterCetner);

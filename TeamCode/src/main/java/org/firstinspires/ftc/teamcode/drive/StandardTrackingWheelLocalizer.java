@@ -31,8 +31,8 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 1; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 6.9; // in; distance between the left and right wheels, coach vince, was 6.61 b4
-    public static double FORWARD_OFFSET = -3.5; // in; offset of the lateral wheel, negative because it is behind
+    public static double LATERAL_DISTANCE = 13; // in; distance between the left and right wheels, coach vince, was 6.61 b4
+    public static double FORWARD_OFFSET = -5.25; // in; offset of the lateral wheel, negative because it is behind
 
     public static double X_MULTIPLIER = 1; // Multiplier in the X direction, coach vince, was 0.989 b4
     public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction, coach vince, was 1.0009 b4
@@ -48,9 +48,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
         leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftFrontMotor"));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFrontMotor"));
+        leftEncoder.setDirection(Encoder.Direction.REVERSE);
+        rightEncoder.setDirection(Encoder.Direction.REVERSE);
        // leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
         backEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftBackMotor"));
-         backEncoder.setDirection(Encoder.Direction.REVERSE);
+          // backEncoder.setDirection(Encoder.Direction.REVERSE);
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
     }
