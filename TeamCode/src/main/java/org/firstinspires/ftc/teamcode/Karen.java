@@ -47,7 +47,7 @@ public class Karen  {
    // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
     public static final int LOW_LINEAR_SLIDE_POSITION = 900;
 
-    public static final double LINEAR_SLIDE_POWER = 0.4;
+    public static final double LINEAR_SLIDE_POWER = 0.8;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
     public Encoder leftEncoder;

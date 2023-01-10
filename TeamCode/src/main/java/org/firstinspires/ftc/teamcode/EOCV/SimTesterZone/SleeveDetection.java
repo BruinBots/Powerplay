@@ -34,7 +34,7 @@ public class SleeveDetection extends OpenCvPipeline {
 
 
     // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(960, 520);
+    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(1000, 960);
 
     // Width and height for the bounding box
     public static int REGION_WIDTH = 70;
@@ -51,7 +51,7 @@ public class SleeveDetection extends OpenCvPipeline {
     public double minPurple = 105;
     public double maxPurple = 140;
     public double minGreen = 15; // found by dividing enriques vals by 2
-    public double maxGreen = 45;
+    public double maxGreen = 60;
 
     Scalar lowGreenHSV = new Scalar(15, 10, 10);
     Scalar highGreenHSV = new Scalar(45, 255, 255);

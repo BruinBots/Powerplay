@@ -46,7 +46,7 @@ public class Master_Auto extends LinearOpMode {
 
         //forward movement
         Trajectory straight = drive.trajectoryBuilder(new Pose2d())
-                .forward(30) // move forward
+                .forward(26) // move forward
                 .build();
 
         // right movement if red

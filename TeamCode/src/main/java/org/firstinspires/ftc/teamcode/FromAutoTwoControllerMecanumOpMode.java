@@ -112,9 +112,15 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     //
     @Override
     public void loop() {
-        drive = -gamepad1.left_stick_y * 0.65;
-        strafe = gamepad1.left_stick_x * 0.65;
-        turn = gamepad1.right_stick_x * 0.8;
+        drive = -gamepad1.left_stick_y * 0.9;
+        strafe = gamepad1.left_stick_x * 0.9;
+        turn = gamepad1.right_stick_x * 0.9;
+
+
+        turn = Math.copySign(Math.pow(turn, 2), turn);
+        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
+        drive = Math.copySign(Math.pow(drive, 2), drive);
+
 
         bot.moveBot(drive, turn, strafe, 0.8);
 
@@ -169,7 +175,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
                 linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
             }
             else {
-                linearSlide += 10;
+                linearSlide += 15;
             }
         }
 
@@ -181,7 +187,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
                 linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
             }
             else {
-                linearSlide -= 10;
+                linearSlide -= 15;
             }
         }
 
