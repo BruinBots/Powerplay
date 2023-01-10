@@ -95,6 +95,17 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        PIDFCoefficients pidNew = new PIDFCoefficients(10, 1, 3, 0);
 //        motorController.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
 //        bot.slideMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+        // Identify motor port for slideMotor
+        int motorIndex = ((bot.slideMotor).getPortNumber());
+        DcMotorControllerEx motorControllerEx = (DcMotorControllerEx)bot.slideMotor.getController();
+
+        // Read out existing PIDF values
+        PIDFCoefficients pidModified = motorControllerEx.getPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION);
+        telemetry.addData("PIDModified: ", pidModified);
+
+        // change coefficients using methods included with DcMotorEx class.
+        PIDFCoefficients pidNew = new PIDFCoefficients(10, 2, 3,0);
+        motorControllerEx.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
     }
 
     //
@@ -122,13 +133,21 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         drive = Math.copySign(Math.pow(drive, 2), drive);
 
 
+        // possible logistic curve implementation
+//        drive = bot.logisticCurve(drive);
+//        strafe = bot.logisticCurve(strafe);
+//        turn = bot.logisticCurve(turn);
+
+        telemetry.addData("Drive: ", drive);
+        telemetry.addData("strafe: ", strafe);
+        telemetry.addData("turn: ", turn);
+
+
         bot.moveBot(drive, turn, strafe, 0.8);
 
 
-        //telemetry.addData("Left Switch", bot.leftFrontSwitch.getState());
-        //telemetry.addData("Right Switch", bot.rightFrontSwitch.getState());
 
-
+        // Open and close
         if (gamepad2.right_bumper) {
             clawPos = Karen.CLAW_OPEN;
             //clawPos += 0.001;
@@ -168,7 +187,6 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //            telemetry.addData("arm still", "");
 //        }
 
-
         if (gamepad2.dpad_up) {
             // bounds for encoder target
             if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
@@ -191,23 +209,28 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
             }
         }
 
+        // zeroes out the slide if the button is clicked
+        if(bot.getSlideButton()){
+            bot.resetSlideMotor();
+        }
+
+        //emergency override - how to implement idk
+
         // all the way down for collection
-        else if (gamepad1.a) {
+        else if (gamepad2.a) {
             linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
         }
 
         // transit/ground junction, little bit off the ground to avoid contact
-        else if (gamepad1.b) {
+        else if (gamepad2.b) {
             linearSlide = Karen.TRANSIT_LINEAR_SLIDE_POSITION;
         }
         // all the way up for low pole scoring
-        else if (gamepad1.y) {
+        else if (gamepad2.y) {
             linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
         }
 
         telemetry.addData("slide button: ", bot.getSlideButton());
-
-
         bot.moveLinearSlide(linearSlide);
 
 
@@ -259,9 +282,6 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        }
 
         isLastValofA = gamepad2.a;
-
-
-
         telemetry.addData("Seek: ", seekStatus);
         telemetry.addData("DROP: ", dropped);
         lastValofX = gamepad1.x;

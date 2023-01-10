@@ -328,5 +328,32 @@ public class Karen  {
         return slideMotor.getCurrentPosition();
     }
 
+    public void resetSlideMotor(){
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    double e = 2.718;
+    double l = 1; // maximum
+    double k = 10; // steepness
+    double x0 = 0.5; // center
+
+    public double logisticCurve(double x){
+        // converts input to positive to be used with logistic curve
+        double absX = Math.abs(x);
+        double answer = l / (1.0 + Math.pow(e, -k * (absX-x0)));
+
+        // clipping values of answer to ensure doesn't exceed motor limits
+        if(answer > 1){
+            answer = 1;
+        } else if (answer < -1){
+            answer = -1;
+        }
+
+        // returns a negative value if input was negative
+        return Math.copySign(answer, x);
+    }
+
+
 
 }
