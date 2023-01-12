@@ -333,21 +333,48 @@ public class Karen  {
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    double e = 2.718;
+    double e = Math.exp(1);
     double l = 1; // maximum
-    double k = 10; // steepness
+    double k = 13; // steepness
     double x0 = 0.5; // center
+    double logMin = 0.1;
+    double logMax = 0.9;
+    double m1; // lower flatzone
+    double m2; // higher flatzone
 
     public double logisticCurve(double x){
         // converts input to positive to be used with logistic curve
         double absX = Math.abs(x);
-        double answer = l / (1.0 + Math.pow(e, -k * (absX-x0)));
+        double answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
+
 
         // clipping values of answer to ensure doesn't exceed motor limits
         if(answer > 1){
             answer = 1;
-        } else if (answer < -1){
-            answer = -1;
+        }
+
+        // returns a negative value if input was negative
+        return Math.copySign(answer, x);
+    }
+
+    public double flattenedLogisticCurve(double x){
+        // converts input to positive to be used with logistic curve
+        double absX = Math.abs(x);
+        double answer = 0;
+
+        if(absX <= logMin){
+            m1 = this.logisticCurve(logMin) / logMin;
+            answer = m1 * absX;
+        } else if(absX <= logMax) {
+            answer = this.logisticCurve(absX);
+        } else {
+            m2 = (1 - this.logisticCurve(logMax)) / (1 - logMax);
+            answer = m2 * (absX - 1) + 1; //point-slop form
+        }
+
+        // clipping values of answer to ensure doesn't exceed motor limits
+        if(answer > 1){
+            answer = 1;
         }
 
         // returns a negative value if input was negative

@@ -96,16 +96,16 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        motorController.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
 //        bot.slideMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidNew);
         // Identify motor port for slideMotor
-        int motorIndex = ((bot.slideMotor).getPortNumber());
-        DcMotorControllerEx motorControllerEx = (DcMotorControllerEx)bot.slideMotor.getController();
-
-        // Read out existing PIDF values
-        PIDFCoefficients pidModified = motorControllerEx.getPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION);
-        telemetry.addData("PIDModified: ", pidModified);
-
-        // change coefficients using methods included with DcMotorEx class.
-        PIDFCoefficients pidNew = new PIDFCoefficients(10, 2, 3,0);
-        motorControllerEx.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
+//        int motorIndex = ((bot.slideMotor).getPortNumber());
+//        DcMotorControllerEx motorControllerEx = (DcMotorControllerEx)bot.slideMotor.getController();
+//
+//        // Read out existing PIDF values
+//        PIDFCoefficients pidModified = motorControllerEx.getPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION);
+//        telemetry.addData("PIDModified: ", pidModified);
+//
+//        // change coefficients using methods included with DcMotorEx class.
+//        PIDFCoefficients pidNew = new PIDFCoefficients(10, 2, 3,0);
+//        motorControllerEx.setPIDFCoefficients(motorIndex, DcMotor.RunMode.RUN_TO_POSITION, pidNew);
     }
 
     //
@@ -123,15 +123,18 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     //
     @Override
     public void loop() {
-        drive = -gamepad1.left_stick_y * 0.9;
-        strafe = gamepad1.left_stick_x * 0.9;
-        turn = gamepad1.right_stick_x * 0.9;
+        drive = -gamepad1.left_stick_y;
+        strafe = gamepad1.left_stick_x;
+        turn = gamepad1.right_stick_x;
 
 
-        turn = Math.copySign(Math.pow(turn, 2), turn);
-        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
-        drive = Math.copySign(Math.pow(drive, 2), drive);
+//        turn = Math.copySign(Math.pow(turn, 2), turn);
+//        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
+//        drive = Math.copySign(Math.pow(drive, 2), drive);
 
+        drive = bot.flattenedLogisticCurve(drive);
+        strafe = bot.flattenedLogisticCurve(strafe);
+        turn = bot.flattenedLogisticCurve(turn);
 
         // possible logistic curve implementation
 //        drive = bot.logisticCurve(drive);
