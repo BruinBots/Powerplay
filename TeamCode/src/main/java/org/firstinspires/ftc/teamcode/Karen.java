@@ -96,6 +96,11 @@ public class Karen  {
         leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
 
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         leftBackMotor.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
         // Encoders
@@ -146,6 +151,12 @@ public class Karen  {
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
         leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
+
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
 
         leftBackMotor.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
@@ -362,6 +373,8 @@ public class Karen  {
         double absX = Math.abs(x);
         double answer = 0;
 
+
+        // piecewise function
         if(absX <= logMin){
             m1 = this.logisticCurve(logMin) / logMin;
             answer = m1 * absX;
