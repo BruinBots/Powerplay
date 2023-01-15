@@ -226,7 +226,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         // transit/ground junction, little bit off the ground to avoid contact
         else if (gamepad2.b) {
-            linearSlide = Karen.TRANSIT_LINEAR_SLIDE_POSITION;
+            linearSlide = Karen.CONE_1;
         }
         // all the way up for low pole scoring
         else if (gamepad2.y) {

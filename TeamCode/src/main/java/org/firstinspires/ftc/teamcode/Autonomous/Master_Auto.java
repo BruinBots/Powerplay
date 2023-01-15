@@ -30,13 +30,34 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Autonomous(group = "measure cut twice once")
 public class Master_Auto extends LinearOpMode {
 
+    SampleMecanumDrive drive;
+    Karen bot;
+
+    public void forward(double inches){
+        Trajectory temp = drive.trajectoryBuilder(new Pose2d())
+                .forward(inches) // move forward
+                .build();
+
+        drive.followTrajectory(temp);
+    }
+
+
+    // righr is postive and left is negative
+    public void strafe(double inches){
+        Trajectory temp = drive.trajectoryBuilder(new Pose2d())
+                .strafeRight(inches) // move forward
+                .build();
+
+        drive.followTrajectory(temp);
+    }
+
 
     // code is written for red and swapped for blue if needed
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
 
-        Karen bot = new Karen(hardwareMap);
+        bot = new Karen(hardwareMap);
         bot.openCam(hardwareMap, telemetry);
 
         // code is written for red and swapped for blue if needed
@@ -85,64 +106,6 @@ public class Master_Auto extends LinearOpMode {
 
         // AUTO DROP CODE ----
 
-//        Trajectory strafeToGround = drive.trajectoryBuilder(straight.end())
-//                .strafeRight(12) // move right
-//                .build();
-//
-//        drive.followTrajectory(strafeToGround);
-//
-//        ElapsedTime runTime = new ElapsedTime();
-//        runTime.reset();
-//        int centerTemp = 0;
-//
-//        bot.currentState = Karen.State.CENTERING;
-//
-//
-//        // centering loop
-//        while(bot.currentState == Karen.State.CENTERING && !isStopRequested()){
-//            centerTemp = bot.center(runTime);
-//            if (centerTemp == 1){
-//                bot.currentState = Karen.State.BACKING; // just to break out of loop
-//            }
-//        }
-//
-//
-//        // backing up loop
-//        int temp = bot.leftEncoder.getCurrentPosition();
-//        while ((Math.abs(bot.leftEncoder.getCurrentPosition() - temp) < 3500) && !isStopRequested()){ // 2000 arbitrary, about quarter of wheel spin
-//            bot.moveBot(-.15,0,0,1);
-//        }
-//
-//        // open the claw
-//        bot.clawServo.setPosition(bot.CLAW_OPEN);
-//
-//        Trajectory backupAfterDrop = drive.trajectoryBuilder(straight.end())
-//                .back(5) // backup
-//                .build();
-//
-//        drive.followTrajectory(backupAfterDrop);
-//
-//
-//        // parking strafe movement
-//        if(bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.LEFT){
-//            Trajectory strafeLeftAfterDrop = drive.trajectoryBuilder(straight.end())
-//                    .strafeLeft(36) // backup
-//                    .build();
-//        } else if (bot.sleeveDetection.getPosition() == SleeveDetection.ParkingPosition.RIGHT) {
-//            Trajectory strafeRightAfterDrop = drive.trajectoryBuilder(straight.end())
-//                    .strafeRight(12) // backup
-//                    .build();
-//        } else /* center is fail case */ {
-//            Trajectory strafeLeftAfterDrop = drive.trajectoryBuilder(straight.end())
-//                    .strafeLeft(12) // backup
-//                    .build();
-//        }
-//
-//        Trajectory forward = drive.trajectoryBuilder(straight.end())
-//                .forward(36) // backup
-//                .build();
-//
-//        drive.followTrajectory(forward);
 
         // AUTO DROP CODE -----
 

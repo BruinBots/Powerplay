@@ -42,7 +42,13 @@ public class Karen  {
 
     public static final int MAX_LINEAR_SLIDE_POSITION = 1850;
     public static final int MIN_LINEAR_SLIDE_POSITION = 0;
-    public static final int TRANSIT_LINEAR_SLIDE_POSITION = 180;
+    public static final int CONE_1 = 180;
+    public static final int CONE_2 = 360;
+    public static final int CONE_3 = 540;
+    public static final int CONE_4 = 720;
+    public static final int CONE_5 = 900;
+
+
 
    // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
     public static final int LOW_LINEAR_SLIDE_POSITION = 900;
@@ -66,8 +72,8 @@ public class Karen  {
     public static int MAX_ARM_POSITION = 20;
     public static int MIN_ARM_POSITION = -310;
 
-    public static double CLAW_OPEN = 0.3;
-    public static double CLAW_CLOSED = 0.0;
+    public static double CLAW_OPEN = 0.5;
+    public static double CLAW_CLOSED = 0.65;
 
     public static double ARM_POWER = 0.95;
 
@@ -294,8 +300,12 @@ public class Karen  {
 
     public double ticksPerInch = 537.6 / 12.56; // TICKS PER REV / CIRCUMFERENCE
 
-    public void moveBotWithEncoder(double inches, double power){
+    public void openClaw(){
+        clawServo.setPosition(CLAW_OPEN);
+    }
 
+    public void closeClaw() {
+        clawServo.setPosition(CLAW_OPEN);
     }
 
 
@@ -341,7 +351,6 @@ public class Karen  {
 
     public void resetSlideMotor(){
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     double e = Math.exp(1);
@@ -392,6 +401,32 @@ public class Karen  {
 
         // returns a negative value if input was negative
         return Math.copySign(answer, x);
+    }
+
+    public void moveArmToLevel(int level){
+        // level 0 =  ground
+        // level 1 = ground cone
+        // level 2 = second cone
+        // level 3 = third
+        // level 4 = fourth
+        // level 5  = fifth
+        // level 6 is top of pole
+
+        if(level == 0){
+            this.moveArm(MIN_ARM_POSITION);
+        } else if (level == 1){
+            this.moveArm(CONE_1);
+        } else if (level == 2){
+            this.moveArm(CONE_2);
+        } else if (level == 3){
+            this.moveArm(CONE_3);
+        } else if (level == 4){
+            this.moveArm(CONE_4);
+        } else if (level == 5){
+            this.moveArm(CONE_5);
+        } else if (level == 6){
+            this.moveArm(MAX_ARM_POSITION);
+        }
     }
 
 
