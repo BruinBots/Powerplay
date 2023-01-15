@@ -132,22 +132,21 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
 //        drive = Math.copySign(Math.pow(drive, 2), drive);
 
-        drive = bot.flattenedLogisticCurve(drive);
-        strafe = bot.flattenedLogisticCurve(strafe);
-        turn = bot.flattenedLogisticCurve(turn);
+        drive = bot.logisticCurve(drive);
+        strafe = bot.logisticCurve(strafe);
+        turn = bot.logisticCurve(turn);
 
-        // possible logistic curve implementation
+         // possible logistic curve implementation
 //        drive = bot.logisticCurve(drive);
 //        strafe = bot.logisticCurve(strafe);
 //        turn = bot.logisticCurve(turn);
 
+
+        bot.moveBot(drive, turn, strafe, 0.5);
+
         telemetry.addData("Drive: ", drive);
         telemetry.addData("strafe: ", strafe);
         telemetry.addData("turn: ", turn);
-
-
-        bot.moveBot(drive, turn, strafe, 0.8);
-
 
 
         // Open and close
@@ -213,7 +212,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         }
 
         // zeroes out the slide if the button is clicked
-        if(bot.getSlideButton()){
+        if(!bot.getSlideButton() && gamepad2.dpad_down){
             bot.resetSlideMotor();
         }
 
@@ -283,17 +282,19 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //            roadRunnerDrive.followTrajectory(correctAfterCetner);
 //            clawPos = bot.CLAW_OPEN;
 //        }
-
-        isLastValofA = gamepad2.a;
-        telemetry.addData("Seek: ", seekStatus);
-        telemetry.addData("DROP: ", dropped);
-        lastValofX = gamepad1.x;
+//
+//        isLastValofA = gamepad2.a;
+//        telemetry.addData("Seek: ", seekStatus);
+//        telemetry.addData("DROP: ", dropped);
+//        lastValofX = gamepad1.x;
 
 
         bot.clawServo.setPosition(clawPos);
 
+        //telemetry.addData("Distance: ",bot.frontDistanceSensor.getDistance());
+
         telemetry.addData("Time: ", runTime.time());
-        telemetry.addData("STATE: ", bot.currentState);
+//        telemetry.addData("STATE: ", bot.currentState);
         telemetry.addData("Target Servo: ", clawPos);
         telemetry.addData("acc Claw Pos: ", bot.clawServo.getPosition());
         // telemetry.addData("armPos:", bot.getCurrentArmPos());

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -81,6 +82,8 @@ public class Karen  {
     public boolean rightSwitch;
 
     public DigitalChannel slideHardStop;
+    public DistanceSensor frontDistanceSensor;
+    public double pickupFromStack;
 
 //    public double avgOverTen = 0;
 //    public double [] avgVals = new double[10];
@@ -354,9 +357,9 @@ public class Karen  {
     }
 
     double e = Math.exp(1);
-    double l = 1; // maximum
-    double k = 13; // steepness
-    double x0 = 0.5; // center
+    double l = 1.04; // maximum
+    double k = -8; // steepness
+    double x0 = 0.6; // center
     double logMin = 0.1;
     double logMax = 0.9;
     double m1; // lower flatzone
@@ -365,13 +368,23 @@ public class Karen  {
     public double logisticCurve(double x){
         // converts input to positive to be used with logistic curve
         double absX = Math.abs(x);
-        double answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
+        double answer = 0;
+
+        if (x < 0.1 || x > 0.95) {
+            answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
+
+            if(answer <= 0.025){
+                answer = 0;
+            } else if(answer >= 0.975){
+                answer = 1;
+            }
+        } else {
+            answer = x;
+        }
 
 
         // clipping values of answer to ensure doesn't exceed motor limits
-        if(answer > 1){
-            answer = 1;
-        }
+
 
         // returns a negative value if input was negative
         return Math.copySign(answer, x);
@@ -428,6 +441,13 @@ public class Karen  {
             this.moveArm(MAX_ARM_POSITION);
         }
     }
+
+//    public void moveToConeStack(){
+//        double rawDistance = frontDistanceSensor.getDistance();
+//        while (rawDistance > pickupFromStack){
+//            this.moveBot(0.2, 0, 0, 0);
+//        }
+//    }
 
 
 
