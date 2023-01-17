@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
@@ -92,6 +93,7 @@ public class Karen  {
     // For eocv
 
     public SleeveDetection sleeveDetection;
+    public AprilTagRecognitionPipeline pipeline;
     public OpenCvCamera camera;
 
     //
@@ -313,18 +315,27 @@ public class Karen  {
 
 
 
+    // c920 at 800 x 448 camera intrinsics, might need to be recalibrated
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    double tagsize = 0.037; //  in meters
+
     public void openCam(HardwareMap map, Telemetry t){
         int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        sleeveDetection = new SleeveDetection(t);
-        camera.setPipeline(sleeveDetection);
+//      sleeveDetection = new SleeveDetection(t);
+        pipeline = new AprilTagRecognitionPipeline(tagsize, fx, fy, cx, cy);
+        camera.setPipeline(pipeline);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
