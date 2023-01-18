@@ -39,13 +39,29 @@ public class EdgeFollow_Testing extends LinearOpMode {
             }
         }
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        while (!found) {
+            bot.moveBot(1, 0, 0, 0.2);
 
-        Trajectory turn = drive.trajectoryBuilder(new Pose2d())
-                .splineTo(new Vector2d(0, 0), Math.toRadians(90))
-                .build();
+            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+            float[] hsv = {0, 0, 0};
+            Color.colorToHSV(colorsRGBA.toColor(), hsv);
 
-        drive.followTrajectory(turn);
+            if (hsv[2] > 125) {
+                found = true;
+            }
+        }
+
+        while (!found) {
+            bot.moveBot(0, 0.05, 0, 0.2);
+
+            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+            float[] hsv = {0, 0, 0};
+            Color.colorToHSV(colorsRGBA.toColor(), hsv);
+
+            if (hsv[2] < 125) {
+                found = true;
+            }
+        }
 
         while (true) {
             bot.moveBot(1, rotate, 0, 0.2);
