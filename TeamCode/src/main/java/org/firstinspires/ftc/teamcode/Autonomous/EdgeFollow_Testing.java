@@ -25,6 +25,20 @@ public class EdgeFollow_Testing extends LinearOpMode {
 
         double rotate = 0.0;
 
+        boolean found = false;
+
+        while (!found) {
+            bot.moveBot(1, 0, 0, 0.2);
+
+            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+            float[] hsv = {0, 0, 0};
+            Color.colorToHSV(colorsRGBA.toColor(), hsv);
+
+            if (hsv[0] > 200 && hsv[0] < 280) {
+                found = true;
+            }
+        }
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         Trajectory turn = drive.trajectoryBuilder(new Pose2d())
@@ -41,10 +55,10 @@ public class EdgeFollow_Testing extends LinearOpMode {
             Color.colorToHSV(colorsRGBA.toColor(), hsv);
 
             if (hsv[2] < 125) {
-                rotate = -10;
+                rotate = -0.1;
             }
             else {
-                rotate = 10;
+                rotate = 0.1;
             }
         }
     }
