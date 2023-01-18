@@ -94,7 +94,7 @@ public class AprilTag_Master_Auto extends LinearOpMode {
             }
 
 //            telemetry.addData("AvgColor: ", bot.sleeveDetection.avgColorVal);
-            telemetry.addData("Parking: ", bot.sleeveDetection.getPosition());
+            telemetry.addData("Parking: ", bot.pipeline.getParkingPosition());
             telemetry.addData("Blue: ", isBlue);
             telemetry.update();
         }

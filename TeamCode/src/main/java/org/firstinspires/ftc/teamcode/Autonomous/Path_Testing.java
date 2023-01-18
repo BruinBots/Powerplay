@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
+import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.Karen;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -66,15 +67,32 @@ public class Path_Testing extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
 
-//        bot.openCam(hardwareMap, telemetry);
+        bot.openCam(hardwareMap, telemetry);
 
         // code is written for red and swapped for blue if needed
         boolean isBlue = false;
         int multiplier = 0;
 
+        Trajectory traj1 = drive.trajectoryBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(6, 11))
+//                .addDisplacementMarker(() -> {
+//                    bot.moveArmToLevel(6);
+//                })
+                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz
+                .build();
+
+//        Trajectory wait = drive.trajectoryBuilder(traj1.end())
+//                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz //  strafe right, then park
+//                .build();
+
+
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
+                .lineToConstantHeading(new Vector2d(-6, -11)) //  strafe right, then park
+                .build();
+
 
         //forward movement
-        Trajectory straight = drive.trajectoryBuilder(new Pose2d())
+        Trajectory straight = drive.trajectoryBuilder(traj2.end())
                 .forward(26) // move forward
                 .build();
 
@@ -104,8 +122,8 @@ public class Path_Testing extends LinearOpMode {
                 multiplier = -1;
             }
 
-            telemetry.addData("AvgColor: ", bot.sleeveDetection.avgColorVal);
-            telemetry.addData("Parking: ", bot.sleeveDetection.getPosition());
+
+            telemetry.addData("Parking: ", bot.pipeline.getParkingPosition());
             telemetry.addData("Blue: ", isBlue);
             telemetry.update();
         }
@@ -113,17 +131,30 @@ public class Path_Testing extends LinearOpMode {
         waitForStart(); // AUTO STARTS AFTER PLAY IS CLICKED --------------
 
 
+
+        AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go right
+
+
+        drive.followTrajectory(traj1);
+        bot.moveSlideToLevel(6);
+        while(bot.slideMotor.isBusy() && !isStopRequested()){
+            //hi
+        }
+        sleep(3000);
+        bot.openClaw();
+        sleep(1000);
+        drive.followTrajectory(traj2);
         //drive straight first, then do corrections
 
-//        SleeveDetection.ParkingPosition parkZone = bot.sleeveDetection.getPosition(); // default go right
-//        telemetry.addData("Parking: ", parkZone);
-//        drive.followTrajectory(straight);
-//
-//        if(parkZone == SleeveDetection.ParkingPosition.LEFT){
-//            drive.followTrajectory(strafeLeft);
-//        } else if (parkZone == SleeveDetection.ParkingPosition.RIGHT){
-//            drive.followTrajectory(strafeRight);
-//        }
+
+        telemetry.addData("Parking: ", parkZone);
+        drive.followTrajectory(straight);
+
+        if(parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT){
+            drive.followTrajectory(strafeLeft);
+        } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.RIGHT){
+            drive.followTrajectory(strafeRight);
+        }
 
 
 

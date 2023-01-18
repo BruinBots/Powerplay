@@ -4,7 +4,6 @@ import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -427,7 +426,7 @@ public class Karen  {
         return Math.copySign(answer, x);
     }
 
-    public void moveArmToLevel(int level){
+    public void moveSlideToLevel(int level){
         // level 0 =  ground
         // level 1 = ground cone
         // level 2 = second cone
@@ -437,19 +436,19 @@ public class Karen  {
         // level 6 is top of pole
 
         if(level == 0){
-            this.moveArm(MIN_ARM_POSITION);
+            this.moveLinearSlide(MIN_LINEAR_SLIDE_POSITION);
         } else if (level == 1){
-            this.moveArm(CONE_1);
+            this.moveLinearSlide(CONE_1);
         } else if (level == 2){
-            this.moveArm(CONE_2);
+            this.moveLinearSlide(CONE_2);
         } else if (level == 3){
-            this.moveArm(CONE_3);
+            this.moveLinearSlide(CONE_3);
         } else if (level == 4){
-            this.moveArm(CONE_4);
+            this.moveLinearSlide(CONE_4);
         } else if (level == 5){
-            this.moveArm(CONE_5);
+            this.moveLinearSlide(CONE_5);
         } else if (level == 6){
-            this.moveArm(MAX_ARM_POSITION);
+            this.moveLinearSlide(MAX_LINEAR_SLIDE_POSITION);
         }
     }
 
