@@ -309,7 +309,7 @@ public class Karen  {
     }
 
     public void closeClaw() {
-        clawServo.setPosition(CLAW_OPEN);
+        clawServo.setPosition(CLAW_CLOSED);
     }
 
 
@@ -367,8 +367,8 @@ public class Karen  {
     }
 
     double e = Math.exp(1);
-    double l = 1.04; // maximum
-    double k = -8; // steepness
+    double l = 1; // maximum
+    double k = -10; // steepness
     double x0 = 0.6; // center
     double logMin = 0.1;
     double logMax = 0.9;
@@ -380,16 +380,12 @@ public class Karen  {
         double absX = Math.abs(x);
         double answer = 0;
 
-        if (x < 0.1 || x > 0.95) {
+        if (absX > 0.01) {
             answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
 
-            if(answer <= 0.025){
-                answer = 0;
-            } else if(answer >= 0.975){
+            if(answer >= 1){
                 answer = 1;
             }
-        } else {
-            answer = x;
         }
 
 
