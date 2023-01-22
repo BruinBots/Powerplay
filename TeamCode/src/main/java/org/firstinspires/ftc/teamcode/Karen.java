@@ -367,9 +367,9 @@ public class Karen  {
     }
 
     double e = Math.exp(1);
-    double l = 1; // maximum
-    double k = -10; // steepness
-    double x0 = 0.6; // center
+    double l = 1.4; // maximum
+    double k = -7; // steepness
+    double x0 = 0.85; // center
     double logMin = 0.1;
     double logMax = 0.9;
     double m1; // lower flatzone
@@ -380,17 +380,9 @@ public class Karen  {
         double absX = Math.abs(x);
         double answer = 0;
 
-        if (absX > 0.01) {
+        if(x != 0) {
             answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
-
-            if(answer >= 1){
-                answer = 1;
-            }
         }
-
-
-        // clipping values of answer to ensure doesn't exceed motor limits
-
 
         // returns a negative value if input was negative
         return Math.copySign(answer, x);

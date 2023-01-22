@@ -73,13 +73,21 @@ public class Path_Testing extends LinearOpMode {
         boolean isBlue = false;
         int multiplier = 0;
 
+
+        // wait 1 second
+        // left then forward
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(6, 11))
+                .addTemporalMarker(1, () -> {})
+                .splineToConstantHeading(new Vector2d(0, 6), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(12, 0), Math.toRadians(0))
 //                .addDisplacementMarker(() -> {
 //                    bot.moveArmToLevel(6);
 //                })
-                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz
+//                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz
                 .build();
+
+
+
 
 //        Trajectory wait = drive.trajectoryBuilder(traj1.end())
 //                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz //  strafe right, then park
@@ -87,7 +95,7 @@ public class Path_Testing extends LinearOpMode {
 
 
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .lineToConstantHeading(new Vector2d(-6, -11)) //  strafe right, then park
+                .splineToLinearHeading(new Pose2d(-6, 12, Math.toRadians(90)), Math.toRadians(90)) //  strafe right, then park
                 .build();
 
 
@@ -134,9 +142,8 @@ public class Path_Testing extends LinearOpMode {
 
         AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go right
 
-
-        drive.followTrajectory(traj1);
         bot.moveSlideToLevel(6);
+        drive.followTrajectory(traj1);
         while(bot.slideMotor.isBusy() && !isStopRequested()){
             //hi
         }
@@ -148,13 +155,13 @@ public class Path_Testing extends LinearOpMode {
 
 
         telemetry.addData("Parking: ", parkZone);
-        drive.followTrajectory(straight);
-
-        if(parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT){
-            drive.followTrajectory(strafeLeft);
-        } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.RIGHT){
-            drive.followTrajectory(strafeRight);
-        }
+       drive.followTrajectory(straight);
+//
+//        if(parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT){
+//            drive.followTrajectory(strafeLeft);
+//        } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.RIGHT){
+//            drive.followTrajectory(strafeRight);
+//        }
 
 
 

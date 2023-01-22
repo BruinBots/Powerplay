@@ -127,14 +127,21 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         strafe = gamepad1.left_stick_x;
         turn = gamepad1.right_stick_x;
 
+//        turn = Math.copySign(Math.pow(turn, 2), turn);
+//        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
+//        drive = Math.copySign(Math.pow(drive, 2), drive);
 
-        turn = Math.copySign(Math.pow(turn, 2), turn);
-        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
-        drive = Math.copySign(Math.pow(drive, 2), drive);
+        telemetry.addData("LEFT_x: ", gamepad1.left_stick_x);
+        telemetry.addData("LEFT_y: ", -gamepad1.left_stick_y);
+        telemetry.addData("RIGHT_x: ", gamepad1.right_stick_x);
 
-//        drive = bot.logisticCurve(drive);
-//        strafe = bot.logisticCurve(strafe);
-//        turn = bot.logisticCurve(turn);
+        drive = bot.logisticCurve(drive);
+        strafe = bot.logisticCurve(strafe);
+        turn = bot.logisticCurve(turn);
+
+        telemetry.addData("Drive: ", drive);
+        telemetry.addData("strafe: ", strafe);
+        telemetry.addData("turn: ", turn);
 
          // possible logistic curve implementation
 //        drive = bot.logisticCurve(drive);
@@ -144,12 +151,12 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         bot.moveBot(drive, turn, strafe, 0.75);
 
-//        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
-//        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
-//        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
-//        telemetry.addData("Drive: ", drive);
-//        telemetry.addData("strafe: ", strafe);
-//        telemetry.addData("turn: ", turn);
+        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
+        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
+        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
+        telemetry.addData("Drive: ", drive);
+        telemetry.addData("strafe: ", strafe);
+        telemetry.addData("turn: ", turn);
 
 
         // Open and close
