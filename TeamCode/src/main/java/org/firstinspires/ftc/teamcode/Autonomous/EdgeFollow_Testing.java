@@ -70,13 +70,9 @@ public class EdgeFollow_Testing extends LinearOpMode {
             float[] hsv = {0, 0, 0};
             Color.colorToHSV(colorsRGBA.toColor(), hsv);
 
-            telemetry.addData("H", hsv[0]);
-            telemetry.addData("S", hsv[1]);
-            telemetry.addData("V", hsv[2]);
-            telemetry.addData("R", colorsRGBA.red);
-            telemetry.addData("G", colorsRGBA.green);
-            telemetry.addData("B", colorsRGBA.blue);
-            telemetry.addData("A", colorsRGBA.alpha);
+            telemetry.addData("HSV", hsv);
+            telemetry.addData("RGBA", colorsRGBA);
+            telemetry.addData("rotate", rotate);
 
             if (hsv[2] < 125) { // threshold between tape and no tape for the HSV value
                 rotate = -0.1;
