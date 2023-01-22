@@ -27,55 +27,61 @@ public class EdgeFollow_Testing extends LinearOpMode {
 
         boolean found = false;
 
-        while (!found) {
-            bot.moveBot(1, 0, 0, 0.2);
-
-            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
-            float[] hsv = {0, 0, 0};
-            Color.colorToHSV(colorsRGBA.toColor(), hsv);
-
-            if (hsv[0] > 200 && hsv[0] < 280) {
-                found = true;
-            }
-        }
-
-        while (!found) {
-            bot.moveBot(1, 0, 0, 0.2);
-
-            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
-            float[] hsv = {0, 0, 0};
-            Color.colorToHSV(colorsRGBA.toColor(), hsv);
-
-            if (hsv[2] > 125) {
-                found = true;
-            }
-        }
-
-        while (!found) {
-            bot.moveBot(0, 0.05, 0, 0.2);
-
-            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
-            float[] hsv = {0, 0, 0};
-            Color.colorToHSV(colorsRGBA.toColor(), hsv);
-
-            if (hsv[2] < 125) {
-                found = true;
-            }
-        }
+//        while (!found) {
+//            bot.moveBot(1, 0, 0, 0.2);
+//
+//            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+//            float[] hsv = {0, 0, 0};
+//            Color.colorToHSV(colorsRGBA.toColor(), hsv);
+//
+//            if (hsv[0] > 200 && hsv[0] < 280) {
+//                found = true;
+//            }
+//        }
+//
+//        while (!found) {
+//            bot.moveBot(1, 0, 0, 0.2);
+//
+//            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+//            float[] hsv = {0, 0, 0};
+//            Color.colorToHSV(colorsRGBA.toColor(), hsv);
+//
+//            if (hsv[2] > 125) {
+//                found = true;
+//            }
+//        }
+//
+//        while (!found) {
+//            bot.moveBot(0, 0.05, 0, 0.2);
+//
+//            NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
+//            float[] hsv = {0, 0, 0};
+//            Color.colorToHSV(colorsRGBA.toColor(), hsv);
+//
+//            if (hsv[2] < 125) {
+//                found = true;
+//            }
+//        }
 
         while (true) {
-            bot.moveBot(1, rotate, 0, 0.2);
+//            bot.moveBot(1, rotate, 0, 0.2); // move straight and then rotate to adjust
 
             NormalizedRGBA colorsRGBA = colorSensor.getNormalizedColors();
             float[] hsv = {0, 0, 0};
             Color.colorToHSV(colorsRGBA.toColor(), hsv);
 
-            if (hsv[2] < 125) {
+            telemetry.addData("HSV", hsv);
+            telemetry.addData("RGBA", colorsRGBA);
+            telemetry.addData("rotate", rotate);
+
+            if (hsv[2] < 125) { // threshold between tape and no tape for the HSV value
                 rotate = -0.1;
             }
             else {
                 rotate = 0.1;
             }
+
+            wait(1);
         }
     }
 }
