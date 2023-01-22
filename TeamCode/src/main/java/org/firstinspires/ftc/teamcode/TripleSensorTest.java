@@ -29,14 +29,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * {@link TripleSensorTest} illustrates how to use the Modern Robotics
@@ -47,44 +42,45 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //@Disabled   // comment out or remove this line to enable this opmode
 public class TripleSensorTest extends LinearOpMode {
 
-    ModernRoboticsI2cRangeSensor rangeSensor;
+    //ModernRoboticsI2cRangeSensor rangeSensor;
     AnalogInput sonarSensor;
-    private DistanceSensor laserSensor;
+    //private DistanceSensor laserSensor;
     //Rev2mDistanceSensor laserSensor;
 
     @Override public void runOpMode() {
 
         // get a reference to our compass
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor");
+        //rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor");
         sonarSensor = hardwareMap.analogInput.get("sonarSensor");
-        laserSensor = hardwareMap.get(DistanceSensor.class, "laserSensor");
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)laserSensor;
+        //hallDigital = hardwareMap.digitalChannel
+        //laserSensor = hardwareMap.get(DistanceSensor.class, "laserSensor");
+        //Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)laserSensor;
 
         // wait for the start button to be pressed
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
+            //telemetry.addData("raw ultrasonic", rangeSensor.rawUltrasonic());
             // Optical only works inside of about 5cm
-            telemetry.addData("raw optical", rangeSensor.rawOptical());
-            telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
+            //telemetry.addData("raw optical", rangeSensor.rawOptical());
+            //telemetry.addData("cm optical", "%.2f cm", rangeSensor.cmOptical());
             // Using the below method gets the best of ultrasonic and optical
-            telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
+            //telemetry.addData("cm", "%.2f cm", rangeSensor.getDistance(DistanceUnit.CM));
 
             // The analog sonar sensor is good for longer distances, it becomes non-responsive
             // inside of about 7in/20cm and locks at it's min value
-            telemetry.addData("Sonar Range:", "%.2f cm", sonarDistance());
+            telemetry.addData("Voltage:", sonarSensor.getVoltage());
 
             // The REV 2M TOF sensor is a bit wonky - it usually reads about 2cm higher than actual,
             // except when it doesn't.
-            telemetry.addData("deviceName",laserSensor.getDeviceName() );
+            //telemetry.addData("deviceName",laserSensor.getDeviceName() );
             //telemetry.addData("range", String.format("%.01f mm", laserSensor.getDistance(DistanceUnit.MM)));
-            telemetry.addData("range", String.format("%.01f cm", laserSensor.getDistance(DistanceUnit.CM)));
+            //telemetry.addData("range", String.format("%.01f cm", laserSensor.getDistance(DistanceUnit.CM)));
 
 
             // Rev2mDistanceSensor specific methods.
-            telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
-            telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
+            //telemetry.addData("ID", String.format("%x", sensorTimeOfFlight.getModelID()));
+            //telemetry.addData("did time out", Boolean.toString(sensorTimeOfFlight.didTimeoutOccur()));
             telemetry.update();
         }
     }
