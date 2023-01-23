@@ -30,18 +30,15 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
+@Config
 @TeleOp(name="FROM_AUTO_TwoController", group="Iterative Opmode")
 public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
@@ -158,7 +155,10 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         telemetry.addData("strafe: ", strafe);
         telemetry.addData("turn: ", turn);
 
-
+        telemetry.addData("Red: ", bot.colorSensor.red());
+        telemetry.addData("Green: ", bot.colorSensor.green());
+        telemetry.addData("Blue: ", bot.colorSensor.blue());
+        telemetry.addData("Color: ", bot.colorSensor.getNormalizedColors());
         // Open and close
         if (gamepad2.right_bumper) {
             bot.openClaw();
