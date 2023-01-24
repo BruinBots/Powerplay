@@ -367,9 +367,9 @@ public class Karen  {
     }
 
     public static double e = Math.exp(1);
-    public static double l = 1.4; // maximum
-    public static double k = 7; // steepness
-    public static double x0 = 0.85; // center
+    public static double l = 2; // maximum
+    public static double k = 2.3; // steepness
+    public static double x0 = 2; // center
     public static double logMin = 0.1;
     public static double logMax = 0.9;
     public static double m1; // lower flatzone

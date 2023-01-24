@@ -49,6 +49,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     double strafe = 0.0;
 
     int linearSlide = 0;
+    int slidePos = 1;
 
     double armPower = 0.0;
     double clawPos = 0.0;
@@ -195,40 +196,50 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //            telemetry.addData("arm still", "");
 //        }
 
-        if (gamepad2.dpad_up) {
-            // bounds for encoder target
-            if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
-                linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
-            }
-            else {
-                linearSlide += 15;
-            }
+//        if (gamepad2.dpad_up) {
+//            // bounds for encoder target
+//            if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
+//                linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
+//            }
+//            else {
+//                linearSlide += 22;
+//            }
+//        }
+
+        linearSlide += -gamepad1.right_stick_y * 22; // second number is slide step
+
+        if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
+            linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;
+        } else if (linearSlide < Karen.MIN_LINEAR_SLIDE_POSITION) {
+            linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
         }
+
+        if(!bot.getSlideButton() && (-gamepad2.left_stick_y < 0)){
+            // zeroes out the slide if the button is clicked
+            bot.resetSlideMotor();
+        } else {
+            bot.moveLinearSlide(linearSlide);
+        }
+        // zeroes out the slide if the button is clicked
 
         // move down unless button is clicked
-        else if (gamepad2.dpad_down && bot.getSlideButton()) {
-
-            //bounds for encoder target
-            if (linearSlide < Karen.MIN_LINEAR_SLIDE_POSITION) {
-                linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
-            }
-            else {
-                linearSlide -= 15;
-            }
-        }
-
-        // zeroes out the slide if the button is clicked
-        if(!bot.getSlideButton() && gamepad2.dpad_down){
-            bot.resetSlideMotor();
-        }
+//        else if (gamepad2.dpad_down && bot.getSlideButton()) {
+//
+//            //bounds for encoder target
+//            if (linearSlide < Karen.MIN_LINEAR_SLIDE_POSITION) {
+//                linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
+//            }
+//            else {
+//                linearSlide -= 22;
+//            }
+//        }
 
         //emergency override - how to implement idk
 
         // all the way down for collection
-        else if (gamepad2.a) {
+        if (gamepad2.a) {
             linearSlide = Karen.MIN_LINEAR_SLIDE_POSITION;
         }
-
         // transit/ground junction, little bit off the ground to avoid contact
         else if (gamepad2.b) {
             linearSlide = Karen.CONE_1;
@@ -239,7 +250,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         }
 
         telemetry.addData("slide button: ", bot.getSlideButton());
-        bot.moveLinearSlide(linearSlide);
+
 
 
 
