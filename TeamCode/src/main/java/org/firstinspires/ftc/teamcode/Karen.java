@@ -1,27 +1,24 @@
 package org.firstinspires.ftc.teamcode;
 
-import static java.lang.Thread.sleep;
-
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
 import org.firstinspires.ftc.teamcode.util.Encoder;
-
-
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-
+@Config
 public class Karen  {
     // Class variables
 
@@ -49,7 +46,7 @@ public class Karen  {
     public static final int CONE_4 = 720;
     public static final int CONE_5 = 900;
 
-
+    public ModernRoboticsI2cColorSensor colorSensor;
 
    // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
     public static final int LOW_LINEAR_SLIDE_POSITION = 900;
@@ -120,6 +117,9 @@ public class Karen  {
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
 
+        // Color Sensor Setup
+        colorSensor = map.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
+        colorSensor.enableLight(true);
 
         // arm assembly --OLD--
 //        armMotor = map.get(DcMotorEx.class, "armMotor");
@@ -366,40 +366,31 @@ public class Karen  {
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    double e = Math.exp(1);
-    double l = 1; // maximum
-    double k = -10; // steepness
-    double x0 = 0.6; // center
-    double logMin = 0.1;
-    double logMax = 0.9;
-    double m1; // lower flatzone
-    double m2; // higher flatzone
+    public static double e = Math.exp(1);
+    public static double l = 1.4; // maximum
+    public static double k = 7; // steepness
+    public static double x0 = 0.85; // center
+    public static double logMin = 0.1;
+    public static double logMax = 0.9;
+    public static double m1; // lower flatzone
+    public static double m2; // higher flatzone
 
     public double logisticCurve(double x){
         // converts input to positive to be used with logistic curve
         double absX = Math.abs(x);
         double answer = 0;
 
-        if (absX > 0.01) {
+        if(x != 0) {
             answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
-
-            if(answer >= 1){
-                answer = 1;
-            }
         }
-
-
-        // clipping values of answer to ensure doesn't exceed motor limits
-
-
         // returns a negative value if input was negative
         return Math.copySign(answer, x);
     }
 
     public double flattenedLogisticCurve(double x){
-        // converts input to positive to be used with logistic curve
-        double absX = Math.abs(x);
-        double answer = 0;
+            // converts input to positive to be used with logistic curve
+            double absX = Math.abs(x);
+            double answer = 0;
 
 
         // piecewise function

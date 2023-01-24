@@ -30,18 +30,15 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
+@Config
 @TeleOp(name="FROM_AUTO_TwoController", group="Iterative Opmode")
 public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
@@ -127,14 +124,21 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         strafe = gamepad1.left_stick_x;
         turn = gamepad1.right_stick_x;
 
+//        turn = Math.copySign(Math.pow(turn, 2), turn);
+//        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
+//        drive = Math.copySign(Math.pow(drive, 2), drive);
 
-        turn = Math.copySign(Math.pow(turn, 2), turn);
-        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
-        drive = Math.copySign(Math.pow(drive, 2), drive);
+        telemetry.addData("LEFT_x: ", gamepad1.left_stick_x);
+        telemetry.addData("LEFT_y: ", -gamepad1.left_stick_y);
+        telemetry.addData("RIGHT_x: ", gamepad1.right_stick_x);
 
-//        drive = bot.logisticCurve(drive);
-//        strafe = bot.logisticCurve(strafe);
-//        turn = bot.logisticCurve(turn);
+        drive = bot.logisticCurve(drive);
+        strafe = bot.logisticCurve(strafe);
+        turn = bot.logisticCurve(turn);
+
+        telemetry.addData("Drive: ", drive);
+        telemetry.addData("strafe: ", strafe);
+        telemetry.addData("turn: ", turn);
 
          // possible logistic curve implementation
 //        drive = bot.logisticCurve(drive);
@@ -144,14 +148,17 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         bot.moveBot(drive, turn, strafe, 0.75);
 
-//        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
-//        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
-//        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
-//        telemetry.addData("Drive: ", drive);
-//        telemetry.addData("strafe: ", strafe);
-//        telemetry.addData("turn: ", turn);
+        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
+        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
+        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
+        telemetry.addData("Drive: ", drive);
+        telemetry.addData("strafe: ", strafe);
+        telemetry.addData("turn: ", turn);
 
-
+        telemetry.addData("Red: ", bot.colorSensor.red());
+        telemetry.addData("Green: ", bot.colorSensor.green());
+        telemetry.addData("Blue: ", bot.colorSensor.blue());
+        telemetry.addData("Color: ", bot.colorSensor.getNormalizedColors());
         // Open and close
         if (gamepad2.right_bumper) {
             bot.openClaw();
