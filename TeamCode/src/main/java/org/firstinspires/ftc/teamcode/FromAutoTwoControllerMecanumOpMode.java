@@ -129,32 +129,52 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //        strafe = Math.copySign(Math.pow(strafe, 2), strafe);
 //        drive = Math.copySign(Math.pow(drive, 2), drive);
 
-        telemetry.addData("LEFT_x: ", gamepad1.left_stick_x);
-        telemetry.addData("LEFT_y: ", -gamepad1.left_stick_y);
-        telemetry.addData("RIGHT_x: ", gamepad1.right_stick_x);
+        telemetry.addData("LEFT_x: ", drive);
+        telemetry.addData("LEFT_y: ", strafe);
+        telemetry.addData("RIGHT_x: ", turn);
 
-        drive = bot.logisticCurve(drive);
-        strafe = bot.logisticCurve(strafe);
-        turn = bot.logisticCurve(turn);
+//        drive = bot.logisticCurve(drive);
+//        strafe = bot.logisticCurve(strafe);
+//        turn = bot.logisticCurve(turn);
 
-        telemetry.addData("Drive: ", drive);
-        telemetry.addData("strafe: ", strafe);
-        telemetry.addData("turn: ", turn);
+
 
          // possible logistic curve implementation
 //        drive = bot.logisticCurve(drive);
 //        strafe = bot.logisticCurve(strafe);
 //        turn = bot.logisticCurve(turn);
 
+        if(gamepad1.left_stick_y != 0 && gamepad1.left_stick_x != 0 && gamepad1.right_stick_x != 0){
+            runTime.reset();
+            drive = 0;
+            strafe = 0;
+            turn = 0;
+        } else {
+            double time = runTime.time();
+            if(gamepad1.left_stick_y != 0 ) {
+                drive = bot.timeLogisticCurve(time, drive);
+            }
+            if (gamepad1.left_stick_x != 0) {
+                strafe = bot.timeLogisticCurve(time, strafe);
+            }
+            if (gamepad1.right_stick_x != 0) {
+                turn = bot.timeLogisticCurve(time, turn);
+            }
+        }
 
-        bot.moveBot(drive, turn, strafe, 0.75);
 
-        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
-        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
-        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
         telemetry.addData("Drive: ", drive);
         telemetry.addData("strafe: ", strafe);
         telemetry.addData("turn: ", turn);
+
+        bot.moveBot(drive, turn, strafe, 0.75);
+
+//        telemetry.addData("gamepadx: ", gamepad1.left_stick_x);
+//        telemetry.addData("gamepady: ", -gamepad1.left_stick_y);
+//        telemetry.addData("gamepadr: ", gamepad1.right_stick_x);
+//        telemetry.addData("Drive: ", drive);
+//        telemetry.addData("strafe: ", strafe);
+//        telemetry.addData("turn: ", turn);
 
         telemetry.addData("Red: ", bot.colorSensor.red());
         telemetry.addData("Green: ", bot.colorSensor.green());
@@ -206,7 +226,7 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 //            }
 //        }
 
-        linearSlide += -gamepad1.right_stick_y * 22; // second number is slide step
+        linearSlide += -gamepad2.right_stick_y * 44; // second number is slide step
 
         if (linearSlide > Karen.MAX_LINEAR_SLIDE_POSITION) {
             linearSlide = Karen.MAX_LINEAR_SLIDE_POSITION;

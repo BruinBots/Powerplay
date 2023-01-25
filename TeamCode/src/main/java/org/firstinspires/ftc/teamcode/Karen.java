@@ -51,7 +51,7 @@ public class Karen  {
    // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
     public static final int LOW_LINEAR_SLIDE_POSITION = 900;
 
-    public static final double LINEAR_SLIDE_POWER = 0.8;
+    public static final double LINEAR_SLIDE_POWER = 0.9;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
     public Encoder leftEncoder;
@@ -326,7 +326,7 @@ public class Karen  {
         int cameraMonitorViewId = map.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", map.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(map.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 //      sleeveDetection = new SleeveDetection(t);
-        pipeline = new AprilTagRecognitionPipeline(tagsize, fx, fy, cx, cy);
+        pipeline = new AprilTagRecognitionPipeline(tagsize, fx, fy, cx, cy, t);
         camera.setPipeline(pipeline);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -367,18 +367,20 @@ public class Karen  {
     }
 
     public static double e = Math.exp(1);
-    public static double l = 2; // maximum
-    public static double k = 2.3; // steepness
-    public static double x0 = 2; // center
+    public static double l = 1; // maximum
+    public static double k = 1; // steepness
+    public static double x0 = 0.3; // center
     public static double logMin = 0.1;
     public static double logMax = 0.9;
     public static double m1; // lower flatzone
     public static double m2; // higher flatzone
+    public static double rampup = 0.25; // in seconds, when the speed starts to woo
 
     public double logisticCurve(double x){
         // converts input to positive to be used with logistic curve
         double absX = Math.abs(x);
         double answer = 0;
+
 
         if(x != 0) {
             answer = l / (1.0 + Math.pow(e, -k * (absX - x0)));
@@ -387,6 +389,24 @@ public class Karen  {
         return Math.copySign(answer, x);
     }
 
+    public static double convertToNewRange(double value, double OriginalMin, double OriginalMax, double NewMin, double NewMax){
+        double newValue = (((value - OriginalMin) * (NewMax - NewMin)) / (OriginalMax - OriginalMin)) + NewMin;
+        return newValue;
+    }
+
+    public double timeLogisticCurve(double time, double controller){
+        // converts input to positive to be used with logistic curve
+        double answer = 0;
+
+        double x = convertToNewRange(time, 0, 1.5, -5, 5);
+        if(time != 0) {
+            answer = ((l - rampup) / (1.0 + Math.pow(e, -k * (x - x0)))) + rampup;
+        }
+
+        return Math.copySign(answer, controller);
+
+        // returns a negative value if input was negative
+    }
     public double flattenedLogisticCurve(double x){
             // converts input to positive to be used with logistic curve
             double absX = Math.abs(x);

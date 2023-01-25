@@ -73,7 +73,7 @@ public class SleeveDetection extends OpenCvPipeline {
     // Running variable storing the parking position
     private volatile ParkingPosition position = ParkingPosition.LEFT;
 
-    public SleeveDetection(Telemetry t) { telemetry = t;}
+    public SleeveDetection(Telemetry t) {telemetry = t;}
 
     @Override
     public Mat processFrame(Mat input) {
