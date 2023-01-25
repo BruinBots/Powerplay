@@ -63,10 +63,6 @@ public class AprilTagRecognitionPipeline extends OpenCvPipeline {
     private final Object decimationSync = new Object();
     public AprilTagRecognitionPipeline(double tagsize, double fx, double fy, double cx, double cy) {
         this.tagsize = tagsize;
-    public AprilTagRecognitionPipeline(Telemetry t)
-    {
-
-        this.telemetry = t;
         this.tagsizeX = tagsize;
         this.tagsizeY = tagsize;
 //        this.fx = fx;
