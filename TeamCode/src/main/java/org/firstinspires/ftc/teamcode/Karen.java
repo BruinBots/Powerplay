@@ -29,6 +29,8 @@ public class Karen  {
         DROPPING
     }
 
+    public static final double SLOW_SPEED = 0.35;
+    public static final double FAST_SPEED = 0.85;
     public State currentState = State.NORMAL;
 
     public DcMotorEx leftFrontMotor;
@@ -38,20 +40,22 @@ public class Karen  {
 
     public DcMotorEx slideMotor;
 
+    public int targetSlidePos;
+
     public static final int MAX_LINEAR_SLIDE_POSITION = 1850;
     public static final int MIN_LINEAR_SLIDE_POSITION = 0;
-    public static final int CONE_1 = 180;
-    public static final int CONE_2 = 360;
-    public static final int CONE_3 = 540;
-    public static final int CONE_4 = 720;
-    public static final int CONE_5 = 900;
+    public static final int CONE_1 = MIN_LINEAR_SLIDE_POSITION; // not used
+    public static final int CONE_2 = 100;
+    public static final int CONE_3 = 290;
+    public static final int CONE_4 = 500;
+    public static final int CONE_5 = 650;
 
     public ModernRoboticsI2cColorSensor colorSensor;
 
    // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
     public static final int LOW_LINEAR_SLIDE_POSITION = 900;
 
-    public static final double LINEAR_SLIDE_POWER = 0.9;
+    public static final double LINEAR_SLIDE_POWER = 0.96;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
 
     public Encoder leftEncoder;
@@ -97,6 +101,7 @@ public class Karen  {
     // constructor with map
     public Karen (HardwareMap map) {
         slideHardStop = map.get(DigitalChannel.class, "slideBottomButton");
+
         // Drivetrain Motors
         leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
@@ -284,9 +289,11 @@ public class Karen  {
     public void moveLinearSlide(int ticks) {
         if (ticks > MAX_LINEAR_SLIDE_POSITION) {
             ticks = MAX_LINEAR_SLIDE_POSITION;
+            targetSlidePos = MAX_LINEAR_SLIDE_POSITION;
         }
         else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
             ticks = MIN_LINEAR_SLIDE_POSITION;
+            targetSlidePos = MIN_LINEAR_SLIDE_POSITION;
         }
         slideMotor.setTargetPosition(ticks);
         if (ticks > MIN_LINEAR_SLIDE_POSITION) {
@@ -442,20 +449,48 @@ public class Karen  {
         // level 5  = fifth
         // level 6 is top of pole
 
-        if(level == 0){
+        if(level == 1){
             this.moveLinearSlide(MIN_LINEAR_SLIDE_POSITION);
-        } else if (level == 1){
-            this.moveLinearSlide(CONE_1);
+            targetSlidePos = MIN_LINEAR_SLIDE_POSITION;// also cone 1
         } else if (level == 2){
             this.moveLinearSlide(CONE_2);
+            targetSlidePos = CONE_2;
         } else if (level == 3){
             this.moveLinearSlide(CONE_3);
+            targetSlidePos = CONE_3;
         } else if (level == 4){
             this.moveLinearSlide(CONE_4);
+            targetSlidePos = CONE_4;
         } else if (level == 5){
             this.moveLinearSlide(CONE_5);
+            targetSlidePos = CONE_5;
         } else if (level == 6){
             this.moveLinearSlide(MAX_LINEAR_SLIDE_POSITION);
+            targetSlidePos = MAX_LINEAR_SLIDE_POSITION;
+        }
+    }
+
+    public void setSlideToLevel(int level){
+        // level 0 =  ground
+        // level 1 = ground cone
+        // level 2 = second cone
+        // level 3 = third
+        // level 4 = fourth
+        // level 5  = fifth
+        // level 6 is top of pole
+
+        if(level == 1){
+            targetSlidePos = MIN_LINEAR_SLIDE_POSITION;// also cone 1
+        } else if (level == 2){
+            targetSlidePos = CONE_2;
+        } else if (level == 3){
+            targetSlidePos = CONE_3;
+        } else if (level == 4){
+            targetSlidePos = CONE_4;
+        } else if (level == 5){
+            targetSlidePos = CONE_5;
+        } else if (level == 6){
+            targetSlidePos = MAX_LINEAR_SLIDE_POSITION;
         }
     }
 

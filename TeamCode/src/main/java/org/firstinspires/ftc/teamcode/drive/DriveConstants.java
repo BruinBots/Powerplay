@@ -64,8 +64,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 40; // assuming inches/second? // changed to 40 from 52, too fast
-    public static double MAX_ACCEL = 40; // truncated decimals from rr generator cuz there was liek 10 decimal points
+    public static double MAX_VEL =  8; //40->8, slower speed for testing; // assuming inches/second? // changed to 40 from 52, too fast
+    public static double MAX_ACCEL = 20; // truncated decimals from rr generator cuz there was liek 10 decimal points
     public static double MAX_ANG_VEL = Math.toRadians(184);
     public static double MAX_ANG_ACCEL = Math.toRadians(184);
 

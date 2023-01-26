@@ -7,9 +7,13 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.Karen;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+
+import java.util.Vector;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -35,6 +39,7 @@ public class Path_Testing extends LinearOpMode {
     Karen bot;
 
 
+    // forward is positive x, left is positive y
 
     public void forward(double inches){
         Trajectory temp = drive.trajectoryBuilder(new Pose2d())
@@ -74,18 +79,34 @@ public class Path_Testing extends LinearOpMode {
         int multiplier = 0;
 
 
-        // wait 1 second
-        // left then forward
+        // move left and move forward and also raise arm at the same time
         Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .addTemporalMarker(1, () -> {})
-                .splineToConstantHeading(new Vector2d(0, 6), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(12, 0), Math.toRadians(0))
-//                .addDisplacementMarker(() -> {
-//                    bot.moveArmToLevel(6);
-//                })
-//                .addTemporalMarker(5, () -> {}) // wait 5 seconds cuhz
+                .addDisplacementMarker(1, () -> {
+                    // Runs 1 inch into trajectory
+                    bot.moveSlideToLevel(6);
+                })
+                .splineToConstantHeading(new Vector2d(2, 0), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(2, 12), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(10, 12), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    // rus after forward movememt
+                    bot.openClaw();
+                })
                 .build();
 
+        Trajectory test = drive.trajectoryBuilder(startPose)
+//                .addDisplacementMarker(1, () -> {
+//                    // Runs 1 inch into trajectory
+//                    bot.moveSlideToLevel(6);
+//                })
+                .splineToConstantHeading(new Vector2d(12, 0), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(0, 0), Math.toRadians(0))
+                //.splineToConstantHeading(new Vector2d(0, 0), Math.toRadians(0))
+//                .addDisplacementMarker(() -> {
+//                    // rus after forward movememt
+//                    bot.openClaw();
+//                })
+                .build();
 
 
 
@@ -94,9 +115,49 @@ public class Path_Testing extends LinearOpMode {
 //                .build();
 
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .splineToLinearHeading(new Pose2d(-6, 12, Math.toRadians(90)), Math.toRadians(90)) //  strafe right, then park
+        TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
+                .addDisplacementMarker(1, () -> {
+                    // Runs 1 inch into trajectory
+                    bot.moveSlideToLevel(6);
+                })
+                .forward(2)
+                .strafeLeft(12.5)
+                .forward(8)
+                .addDisplacementMarker(() -> {
+                    // rus after forward movememt
+                    bot.openClaw();
+                })
+                .waitSeconds(2)
+                .back(8)
+                .waitSeconds(1)
+                .turn(Math.toRadians(-90))
+                .waitSeconds(1)
+                .forward(30)
                 .build();
+
+        // going to movebck, turn right, and strafe to parallel with alliance, then next is strafe to cone stack
+        Trajectory traj2 = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
+                .lineToLinearHeading(new Pose2d(0, -36, Math.toRadians(-90))) //  strafe right, then park
+                .build();
+
+        Trajectory moveback = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
+                .back(4)
+                .build();
+
+        // strafing left towards cone stack
+        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
+                .addDisplacementMarker(1, () -> {
+                    // Runs 1 inch into trajectory
+                    bot.moveSlideToLevel(5); //  move to constack level one to so we are ready to pick up
+                })
+                .lineToConstantHeading(new Vector2d(0, 40)) //  strafe left towards cone stack
+                .build();
+
+
+        // self cetnering, here, do i have to over shoot or undershoot the cone stack
+        //selfcenter();
+
+
 
 
         //forward movement
@@ -136,27 +197,24 @@ public class Path_Testing extends LinearOpMode {
             telemetry.update();
         }
 
-        waitForStart(); // AUTO STARTS AFTER PLAY IS CLICKED --------------
-
-
+        waitForStart(); // AUTO STARTS AFTER PLAY IS CLICKED -------------
+        bot.closeClaw();
 
         AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go right
 
-        bot.moveSlideToLevel(6);
-        drive.followTrajectory(traj1);
-        while(bot.slideMotor.isBusy() && !isStopRequested()){
-            //hi
-        }
-        sleep(3000);
-        bot.openClaw();
-        sleep(1000);
-        drive.followTrajectory(traj2);
+        drive.followTrajectorySequence(trajSeq1);
+//        drive.followTrajectory(traj1);
+//        sleep(2000);
+//        drive.followTrajectory(moveback);
+//        drive.followTrajectory(traj2);
+//        sleep(2000);
+//        drive.followTrajectory(traj3);
         //drive straight first, then do corrections
 
 
-        telemetry.addData("Parking: ", parkZone);
-       drive.followTrajectory(straight);
-//
+//        telemetry.addData("Parking: ", parkZone);
+//       drive.followTrajectory(straight);
+///
 //        if(parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT){
 //            drive.followTrajectory(strafeLeft);
 //        } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.RIGHT){
