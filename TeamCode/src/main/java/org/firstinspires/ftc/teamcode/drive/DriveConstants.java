@@ -33,7 +33,8 @@ public class DriveConstants {
      */
     public static final boolean RUN_USING_ENCODER = false;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
-            getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
+            12.6929);
+    // got f value from max velo tuner
 
     /*
      * These are physical constants that can be determined from your robot (including the track
@@ -45,7 +46,7 @@ public class DriveConstants {
      */
     public static double WHEEL_RADIUS = 1.88976; // gobuilda mecanum radius from rr gen
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 10.75 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5, ayaan chnaged to 10.5 because center to center
+    public static double TRACK_WIDTH = 10.6 ; // WHEELBASE OF CHASSIS width, coach vince change to 12.5, ayaan chnaged to 10.5 because center to center
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -53,7 +54,7 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = .005; // coach vince .005, set to 1/40 rn
+    public static double kV = .012; // coach vince .005, set to 1/40 rn
     public static double kA = 0.002; // coach vince .002
     public static double kStatic = 0.01; //coach vince .01
 
@@ -64,10 +65,10 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL =  8; //40->8, slower speed for testing; // assuming inches/second? // changed to 40 from 52, too fast
-    public static double MAX_ACCEL = 20; // truncated decimals from rr generator cuz there was liek 10 decimal points
-    public static double MAX_ANG_VEL = Math.toRadians(184);
-    public static double MAX_ANG_ACCEL = Math.toRadians(184);
+    public static double MAX_VEL =  30; //40->8, slower speed for testing; // assuming inches/second? // changed to 40 from 52, too fast
+    public static double MAX_ACCEL = 30; // truncated decimals from rr generator cuz there was liek 10 decimal points
+    public static double MAX_ANG_VEL = Math.toRadians(160);
+    public static double MAX_ANG_ACCEL = Math.toRadians(160);
 
 
     public static double encoderTicksToInches(double ticks) {

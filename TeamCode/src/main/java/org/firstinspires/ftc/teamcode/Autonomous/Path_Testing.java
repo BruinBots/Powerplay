@@ -120,6 +120,7 @@ public class Path_Testing extends LinearOpMode {
                     // Runs 1 inch into trajectory
                     bot.moveSlideToLevel(6);
                 })
+                .waitSeconds(1)
                 .forward(2)
                 .strafeLeft(12.5)
                 .forward(8)
@@ -127,12 +128,21 @@ public class Path_Testing extends LinearOpMode {
                     // rus after forward movememt
                     bot.openClaw();
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .back(8)
                 .waitSeconds(1)
+                .strafeLeft(12.5)
+                .waitSeconds(1)
+                .forward(48)
+                .waitSeconds(1)
+                .addDisplacementMarker(() -> {
+                    // rus after forward movememt
+                    bot.moveSlideToLevel(5);
+                })
                 .turn(Math.toRadians(-90))
                 .waitSeconds(1)
-                .forward(30)
+                .forward(50)
+                .waitSeconds(1)
                 .build();
 
         // going to movebck, turn right, and strafe to parallel with alliance, then next is strafe to cone stack
@@ -203,6 +213,22 @@ public class Path_Testing extends LinearOpMode {
         AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go right
 
         drive.followTrajectorySequence(trajSeq1);
+        bot.closeClaw();
+        sleep(1000);
+        bot.moveSlideToLevel(6);
+        while(bot.slideMotor.isBusy()){
+
+        }
+
+        Trajectory back = drive.trajectoryBuilder(traj2.end())
+                .back(10) // move forward
+                .build();
+
+        sleep(1000);
+
+
+
+
 //        drive.followTrajectory(traj1);
 //        sleep(2000);
 //        drive.followTrajectory(moveback);

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
 import org.firstinspires.ftc.teamcode.util.Encoder;
@@ -42,7 +43,7 @@ public class Karen  {
 
     public int targetSlidePos;
 
-    public static final int MAX_LINEAR_SLIDE_POSITION = 1850;
+    public static final int MAX_LINEAR_SLIDE_POSITION = 1840;
     public static final int MIN_LINEAR_SLIDE_POSITION = 0;
     public static final int CONE_1 = MIN_LINEAR_SLIDE_POSITION; // not used
     public static final int CONE_2 = 100;
@@ -51,9 +52,6 @@ public class Karen  {
     public static final int CONE_5 = 650;
 
     public ModernRoboticsI2cColorSensor colorSensor;
-
-   // public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
-    public static final int LOW_LINEAR_SLIDE_POSITION = 900;
 
     public static final double LINEAR_SLIDE_POWER = 0.96;
     public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
@@ -67,8 +65,6 @@ public class Karen  {
 
     public DigitalChannel leftFrontSwitch;
     public DigitalChannel rightFrontSwitch;
-
-    public DigitalChannel leftOdoWheel;
 
     // this is assuming that the arm starts up, and that position is set to 0 at the start
     public static int MAX_ARM_POSITION = 20;
@@ -84,18 +80,15 @@ public class Karen  {
 
     public DigitalChannel slideHardStop;
     public DistanceSensor frontDistanceSensor;
-    public double pickupFromStack;
-
-//    public double avgOverTen = 0;
-//    public double [] avgVals = new double[10];
-
+    DistanceUnit units_mm = DistanceUnit.MM;
+    // in mm
+    public double pickupFromStack = 130;
 
     // For eocv
 
     public SleeveDetection sleeveDetection;
     public AprilTagRecognitionPipeline pipeline;
     public OpenCvCamera camera;
-
     //
 
     // constructor with map
@@ -126,20 +119,12 @@ public class Karen  {
         colorSensor = map.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
         colorSensor.enableLight(true);
 
-        // arm assembly --OLD--
-//        armMotor = map.get(DcMotorEx.class, "armMotor");
-//        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-//        backOdoWheel = map.get(Encoder.class, );
-//        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
-//        rightOdoWheel =;
+        slideMotor.setVelocityPIDFCoefficients(10, 2, 3,0);
 
         //left odo wheel
         leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,9 +138,12 @@ public class Karen  {
         leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Front Switches
-        // leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        // rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
+        frontDistanceSensor = map.get(DistanceSensor.class, "frontDistanceSensor");
+    }
+
+    //in mm
+    public double getFrontDistance(){
+        return frontDistanceSensor.getDistance(units_mm);
     }
 
     public Karen (HardwareMap map, boolean fromAuto) {
@@ -181,22 +169,12 @@ public class Karen  {
         //leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
-        // arm assembly
-//        armMotor = map.get(DcMotorEx.class, "armMotor");
-//        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-//        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // not resetting the position because it is from auto
-        //armMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         clawServo = map.get(Servo.class, "clawServo");
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-//        backOdoWheel = map.get(Encoder.class, );
-//        leftOdoWheel = map.get(DigitalChannel.class, "leftDeadwheel");
-//        rightOdoWheel =;
 
         //left odo wheel
         leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -209,10 +187,6 @@ public class Karen  {
         // back odo wheel
         leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // Front Switches
-        // leftFrontSwitch = map.get(DigitalChannel.class, "leftFrontSwitch");
-        // rightFrontSwitch = map.get(DigitalChannel.class, "rightFrontSwitch");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -236,13 +210,11 @@ public class Karen  {
         }
 
 
-
         // setting motor power and scaling down to preference
         leftFrontMotor.setPower(wheelSpeeds[0] * scaleFactor);
         rightFrontMotor.setPower(wheelSpeeds[1] * scaleFactor);
         leftBackMotor.setPower(wheelSpeeds[2] * scaleFactor);
         rightBackMotor.setPower(wheelSpeeds[3] * scaleFactor);
-
     }
 
     // movebot command that runs for a certain amount of time
@@ -274,12 +246,6 @@ public class Karen  {
             return -1;
     }
 
-
-
-
-
-
-
     public void moveArm(int targetPos){
         armMotor.setTargetPosition(targetPos);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -296,13 +262,14 @@ public class Karen  {
             targetSlidePos = MIN_LINEAR_SLIDE_POSITION;
         }
         slideMotor.setTargetPosition(ticks);
-        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
-            slideMotor.setPower(LINEAR_SLIDE_POWER);
-        }
-        else {
-            slideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
-        }
+//        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
+//            slideMotor.setPower(LINEAR_SLIDE_POWER);
+//        }
+//        else {
+//            slideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
+//        }
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor.setPower(LINEAR_SLIDE_POWER);
     }
 
     public int getCurrentArmPos(){
@@ -318,8 +285,6 @@ public class Karen  {
     public void closeClaw() {
         clawServo.setPosition(CLAW_CLOSED);
     }
-
-
 
     // c920 at 800 x 448 camera intrinsics, might need to be recalibrated
     double fx = 578.272;
@@ -347,8 +312,6 @@ public class Karen  {
             @Override
             public void onError(int errorCode) {}
         });
-
-
     }
 
 
@@ -494,12 +457,12 @@ public class Karen  {
         }
     }
 
-//    public void moveToConeStack(){
-//        double rawDistance = frontDistanceSensor.getDistance();
-//        while (rawDistance > pickupFromStack){
-//            this.moveBot(0.2, 0, 0, 0);
-//        }
-//    }
+    public void moveToConeStack(){
+        double rawDistance = frontDistanceSensor.getDistance(units_mm);
+        if(rawDistance >= pickupFromStack){
+            this.moveBot(0.3, 0, 0, 1);
+        }
+    }
 
 
 
