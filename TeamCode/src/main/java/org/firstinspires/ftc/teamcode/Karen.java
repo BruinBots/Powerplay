@@ -82,7 +82,7 @@ public class Karen  {
     public DistanceSensor frontDistanceSensor;
     DistanceUnit units_mm = DistanceUnit.MM;
     // in mm
-    public double pickupFromStack = 130;
+    public double pickupFromStack = 140; // 140 mm so 14 cm
 
     // For eocv
 
@@ -460,7 +460,9 @@ public class Karen  {
     public void moveToConeStack(){
         double rawDistance = frontDistanceSensor.getDistance(units_mm);
         if(rawDistance >= pickupFromStack){
-            this.moveBot(0.3, 0, 0, 1);
+            this.moveBot(0.2, 0, 0, 1);
+        } else {
+            this.moveBot(0, 0, 0, 1);
         }
     }
 
