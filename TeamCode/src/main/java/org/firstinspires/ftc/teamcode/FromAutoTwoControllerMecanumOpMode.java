@@ -151,10 +151,10 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         // Open and close
         if (gamepad2.right_bumper) {
-            bot.openClaw();
+            bot.closeClaw();
         }
         if (gamepad2.left_bumper) {
-            bot.closeClaw();
+            bot.openClaw();
         }
 
 

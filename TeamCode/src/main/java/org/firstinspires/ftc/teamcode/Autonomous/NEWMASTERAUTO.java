@@ -75,7 +75,7 @@ public class NEWMASTERAUTO extends LinearOpMode {
         int multiplier = 1;
 
         Trajectory moveback = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
-                .back(4)
+                .back(24)
                 .build();
 
         // strafing left towards cone stack
@@ -133,7 +133,7 @@ public class NEWMASTERAUTO extends LinearOpMode {
                 .waitSeconds(1)
                 .forward(2)
                 .strafeLeft(12.5 * multiplier)
-                .forward(7.5)
+                .forward(7)
                 .addDisplacementMarker(() -> {
                     // rus after forward movememt
                     bot.openClaw();
@@ -141,9 +141,9 @@ public class NEWMASTERAUTO extends LinearOpMode {
                 .waitSeconds(.5)
                 .back(8)
                 .waitSeconds(.5)
-                .strafeLeft(12.5 * multiplier)
+                .strafeLeft(12 * multiplier)
                 .waitSeconds(.5)
-                .forward(48)
+                .forward(54)
                 .waitSeconds(.5)
                 .addDisplacementMarker(() -> {
                     // rus after forward movememt
@@ -151,8 +151,16 @@ public class NEWMASTERAUTO extends LinearOpMode {
                 })
                 .turn(Math.toRadians(-90 * multiplier))
                 .waitSeconds(.5)
-                .forward(50)
+                .forward(40)
                 .waitSeconds(.5)
+                .build();
+
+        TrajectorySequence moveback1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .back(24)
+                .waitSeconds(1)
+                .turn(Math.toRadians(-45))
+                .waitSeconds(1)
+                .forward(6)
                 .build();
 
 
@@ -161,17 +169,36 @@ public class NEWMASTERAUTO extends LinearOpMode {
         AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go center
         sleep(1000);
 
+
         // ends in front of cone stack
         drive.followTrajectorySequence(trajSeq1);
 
-        bot.moveToConeStack();
+        double targetAngle = bot.getHeading();
+        while((bot.colorSensor.blue() < (bot.colorSensor.red() * 3)) & !isStopRequested()){
+            bot.gyroStrafe(0.2, targetAngle);
+        }
+
+        bot.moveBot(0, 0, 0, 1);
+
+        sleep(1000);
+        while(bot.getFrontDistance() >= bot.pickupFromStack && !isStopRequested()) {
+            bot.moveToConeStack();
+        }
+
         sleep(1000);
         bot.closeClaw();
         sleep(1000);
         bot.moveSlideToLevel(6);
-        sleep(1000);
+        // sleep(1000);
 
-        drive.followTrajectory(moveback);
+         drive.followTrajectorySequence(moveback1);
+
+//        while(bot.getFrontDistance() <= 312 && !isStopRequested()){
+//            bot.moveBot(-0.2, 0, 0, 0);
+//        }
+
+        sleep(1000);
+        bot.openClaw();
 
         Trajectory back = drive.trajectoryBuilder(new Pose2d())
                 .back(10) // move forward

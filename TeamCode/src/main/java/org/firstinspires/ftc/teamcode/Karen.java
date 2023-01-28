@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,7 +14,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.SleeveDetection;
 import org.firstinspires.ftc.teamcode.util.Encoder;
@@ -30,6 +36,8 @@ public class Karen  {
         DROPPING
     }
 
+    public BNO055IMU imu;
+
     public static final double SLOW_SPEED = 0.35;
     public static final double FAST_SPEED = 0.85;
     public State currentState = State.NORMAL;
@@ -43,7 +51,7 @@ public class Karen  {
 
     public int targetSlidePos;
 
-    public static final int MAX_LINEAR_SLIDE_POSITION = 1840;
+    public static final int MAX_LINEAR_SLIDE_POSITION = 1850;
     public static final int MIN_LINEAR_SLIDE_POSITION = 0;
     public static final int CONE_1 = MIN_LINEAR_SLIDE_POSITION; // not used
     public static final int CONE_2 = 100;
@@ -93,6 +101,18 @@ public class Karen  {
 
     // constructor with map
     public Karen (HardwareMap map) {
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = map.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
         slideHardStop = map.get(DigitalChannel.class, "slideBottomButton");
 
         // Drivetrain Motors
@@ -147,8 +167,19 @@ public class Karen  {
     }
 
     public Karen (HardwareMap map, boolean fromAuto) {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = map.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
         slideHardStop = map.get(DigitalChannel.class, "slideBottomButton");
-        slideHardStop.setMode(DigitalChannel.Mode.INPUT);
+
         // Drivetrain Motors
         leftFrontMotor = map.get(DcMotorEx.class, "leftFrontMotor");
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
@@ -160,7 +191,6 @@ public class Karen  {
         leftBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightBackMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-
         leftBackMotor.setDirection(DcMotorEx.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorEx.Direction.REVERSE);
         // Encoders
@@ -169,12 +199,17 @@ public class Karen  {
         //leftEncoder.setDirection(Encoder.Direction.REVERSE); // might be wrong, but go builda reverses left by default so i reversed right, can check with op mode
         frontEncoder = new Encoder(map.get(DcMotorEx.class, "leftBackMotor"));
 
+
+        // Color Sensor Setup
+        colorSensor = map.get(ModernRoboticsI2cColorSensor.class,"colorSensor");
+        colorSensor.enableLight(true);
+
         clawServo = map.get(Servo.class, "clawServo");
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        //slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); not resetting because coming from auto
+        slideMotor.setVelocityPIDFCoefficients(10, 2, 3,0);
 
         //left odo wheel
         leftFrontMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -187,6 +222,8 @@ public class Karen  {
         // back odo wheel
         leftBackMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftBackMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        frontDistanceSensor = map.get(DistanceSensor.class, "frontDistanceSensor");
     }
 
     public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
@@ -464,6 +501,51 @@ public class Karen  {
         } else {
             this.moveBot(0, 0, 0, 1);
         }
+    }
+
+    public void gyroStrafe ( double speed, double heading){
+        // This function will strafe the robot at a given speed while holding a heading
+
+        double error = getError(heading);
+        double deadband = 3;
+        error = getError(heading);
+        if (error < 0 && Math.abs(error) > deadband) {
+            // Nagative error greater than 5 degrees, left of desired heading, input positive rotation
+            this.moveBot(0, -.25, speed, 0.6);
+        } else if (error > 0 && Math.abs(error) > deadband){
+            // Positive Error greater than 5 degrees, right of desired heading, input negative rotation
+            this.moveBot(0, 0.25, speed, 0.6);
+        } else {
+            // Robot is on course
+            this.moveBot(0, 0, speed, 0.6);
+        }
+    }
+
+    public double getError(double targetAngle) {
+        double robotError;
+
+        // calculate error in -179 to +180 range  (
+        robotError = targetAngle - getHeading();
+        if (robotError > 180) { robotError -= 360;}
+        else if (robotError <= -180) {robotError += 360;}
+        return robotError;
+    }
+
+
+
+    public double getHeading()
+    {
+        // Get the current heading.
+        Orientation angles = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double heading = -(angles.firstAngle+360)%360;
+
+        if (heading < -180)
+            heading += 360;
+        else if (heading > 180)
+            heading -= 360;
+
+        return heading;
     }
 
 
