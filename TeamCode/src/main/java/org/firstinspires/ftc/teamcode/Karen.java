@@ -140,6 +140,7 @@ public class Karen  {
         colorSensor.enableLight(true);
 
         clawServo = map.get(Servo.class, "clawServo");
+        this.closeClaw();
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -208,7 +209,7 @@ public class Karen  {
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); not resetting because coming from auto
+        // slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setVelocityPIDFCoefficients(10, 2, 3,0);
 
         //left odo wheel
@@ -294,10 +295,10 @@ public class Karen  {
             ticks = MAX_LINEAR_SLIDE_POSITION;
             targetSlidePos = MAX_LINEAR_SLIDE_POSITION;
         }
-        else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
-            ticks = MIN_LINEAR_SLIDE_POSITION;
-            targetSlidePos = MIN_LINEAR_SLIDE_POSITION;
-        }
+//        else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
+//            ticks = MIN_LINEAR_SLIDE_POSITION;
+//            targetSlidePos = MIN_LINEAR_SLIDE_POSITION;
+//        }
         slideMotor.setTargetPosition(ticks);
 //        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
 //            slideMotor.setPower(LINEAR_SLIDE_POWER);
@@ -359,6 +360,7 @@ public class Karen  {
         rightBackMotor.setPower(0);
 
         slideMotor.setPower(0);
+        this.closeClaw();
     }
 
     public boolean getSlideButton(){
@@ -511,13 +513,13 @@ public class Karen  {
         error = getError(heading);
         if (error < 0 && Math.abs(error) > deadband) {
             // Nagative error greater than 5 degrees, left of desired heading, input positive rotation
-            this.moveBot(0, -.25, speed, 0.6);
+            this.moveBot(0, -.25, speed, 1);
         } else if (error > 0 && Math.abs(error) > deadband){
             // Positive Error greater than 5 degrees, right of desired heading, input negative rotation
-            this.moveBot(0, 0.25, speed, 0.6);
+            this.moveBot(0, 0.25, speed, 1);
         } else {
             // Robot is on course
-            this.moveBot(0, 0, speed, 0.6);
+            this.moveBot(0, 0, speed, 1);
         }
     }
 
@@ -536,7 +538,7 @@ public class Karen  {
     public double getHeading()
     {
         // Get the current heading.
-        Orientation angles = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = this.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YXZ, AngleUnit.DEGREES);
 
         double heading = -(angles.firstAngle+360)%360;
 
@@ -548,6 +550,19 @@ public class Karen  {
         return heading;
     }
 
+    public double encoderToInches(int initalPos, int finalPos){
+        // negative diff means right
+        // positive diff means left
+
+        int diff = finalPos - initalPos;
+        double answer = 0;
+
+        double tickPerInch = 1304;
+        answer = ((double) Math.abs(diff)) / (ticksPerInch);
+
+        // because negative diff would mean
+        return answer;
+    }
 
 
 }

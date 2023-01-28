@@ -40,7 +40,7 @@ public class NEWMASTERAUTO extends LinearOpMode {
 
     // forward is positive x, left is positive y
 
-    public void forward(double inches){
+    public void forward(double inches) {
         Trajectory temp = drive.trajectoryBuilder(new Pose2d())
                 .forward(inches) // move forward
                 .build();
@@ -50,7 +50,7 @@ public class NEWMASTERAUTO extends LinearOpMode {
 
 
     // righr is postive and left is negative
-    public void strafe(double inches){
+    public void strafe(double inches) {
         Trajectory temp = drive.trajectoryBuilder(new Pose2d())
                 .strafeRight(inches) // move forward
                 .build();
@@ -67,70 +67,64 @@ public class NEWMASTERAUTO extends LinearOpMode {
         bot.openCam(hardwareMap, telemetry);
 
         // SETTING START POSE, HAVE TO CHANGE THIS LATER TO WHATEVER OUR FIELD POSITION IS
-        Pose2d  startPose = new Pose2d(0,0, 0);
+        Pose2d startPose = new Pose2d(0, 0, 0);
         drive.setPoseEstimate(startPose);
 
         // right is default start side
         boolean isLeft = false;
+        boolean isRed = false;
         int multiplier = 1;
 
-        Trajectory moveback = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
-                .back(24)
-                .build();
 
         // strafing left towards cone stack
-        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
-                .addDisplacementMarker(1, () -> {
-                    // Runs 1 inch into trajectory
-                    bot.moveSlideToLevel(5); //  move to constack level one to so we are ready to pick up
-                })
-                .lineToConstantHeading(new Vector2d(0, 40)) //  strafe left towards cone stack
-                .build();
+//        Trajectory traj3 = drive.trajectoryBuilder(new Pose2d()) //  reseting its pose to 0
+//                .addDisplacementMarker(1, () -> {
+//                    // Runs 1 inch into trajectory
+//                    bot.moveSlideToLevel(5); //  move to constack level one to so we are ready to pick up
+//                })
+//                .lineToConstantHeading(new Vector2d(0, 40)) //  strafe left towards cone stack
+//                .build();
+//
+//
+//        //forward movement
+//        Trajectory straight = drive.trajectoryBuilder(new Pose2d())
+//                .forward(26) // move forward
+//                .build();
+//
+//        // right movement if red
+//        Trajectory strafeRight = drive.trajectoryBuilder(straight.end())
+//                .strafeRight(24) // move right
+//                .build();
+//
+//        Trajectory strafeLeft = drive.trajectoryBuilder(straight.end())
+//                .strafeLeft(24) // move left
+//                .build();
 
 
-        //forward movement
-        Trajectory straight = drive.trajectoryBuilder(new Pose2d())
-                .forward(26) // move forward
-                .build();
-
-        // right movement if red
-        Trajectory strafeRight = drive.trajectoryBuilder(straight.end())
-                .strafeRight(24) // move right
-                .build();
-
-        Trajectory strafeLeft = drive.trajectoryBuilder(straight.end())
-                .strafeLeft(24) // move left
-                .build();
-
-
-        while(!isStarted()){
-            if(gamepad1.x){
+        while (!isStarted()) {
+            if (gamepad1.x) {
                 isLeft = true;
             }
 
-            if(gamepad1.b){
-                isLeft = false;
+            if (gamepad1.b) {
+                isRed = true;
             }
 
-            if(isLeft){
+            if (isLeft) {
                 multiplier = -1;
             }
 
             telemetry.addData("Parking: ", bot.pipeline.getParkingPosition());
-            telemetry.addData("Blue: ", isLeft);
+            telemetry.addData("IsLeft: ", isLeft);
+            telemetry.addData("IsRed: ", isRed);
             telemetry.update();
         }
-
-        // init banana detector
-        BananaDetector bananaVision = new BananaDetector(telemetry);
-        waitForStart(); // AUTO STARTS AFTER PLAY IS CLICKED -------------
 
         TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
                 .addDisplacementMarker(1, () -> {
                     // Runs 1 inch into trajectory
                     bot.moveSlideToLevel(6);
                 })
-                .waitSeconds(1)
                 .forward(2)
                 .strafeLeft(12.5 * multiplier)
                 .forward(7)
@@ -138,75 +132,152 @@ public class NEWMASTERAUTO extends LinearOpMode {
                     // rus after forward movememt
                     bot.openClaw();
                 })
-                .waitSeconds(.5)
                 .back(8)
-                .waitSeconds(.5)
+
                 .strafeLeft(12 * multiplier)
-                .waitSeconds(.5)
-                .forward(54)
-                .waitSeconds(.5)
+
+                .forward(50)
+
                 .addDisplacementMarker(() -> {
                     // rus after forward movememt
                     bot.moveSlideToLevel(5);
                 })
-                .turn(Math.toRadians(-90 * multiplier))
-                .waitSeconds(.5)
-                .forward(40)
-                .waitSeconds(.5)
-                .build();
+                .turn(Math.toRadians(-92 * multiplier))
 
-        TrajectorySequence moveback1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .back(24)
-                .waitSeconds(1)
-                .turn(Math.toRadians(-45))
-                .waitSeconds(1)
-                .forward(6)
-                .build();
+                .forward(20)
+                .strafeLeft(4 * multiplier)
+                .forward(20)
 
+                .build();
+        // init banana detector
+        BananaDetector bananaVision = new BananaDetector(telemetry);
+
+        waitForStart(); // AUTO STARTS AFTER PLAY IS CLICKED -------------
+
+//        TrajectorySequence trajSeq1 = drive.trajectorySequenceBuilder(startPose)
+//                .addDisplacementMarker(1, () -> {
+//                    // Runs 1 inch into trajectory
+//                    bot.moveSlideToLevel(6);
+//                })
+//                .waitSeconds(1)
+//                .forward(2)
+//                .strafeLeft(12.5 * multiplier)
+//                .forward(7)
+//                .addDisplacementMarker(() -> {
+//                    // rus after forward movememt
+//                    bot.openClaw();
+//                })
+//                .waitSeconds(.5)
+//                .back(8)
+//                .waitSeconds(.5)
+//                .strafeLeft(12 * multiplier)
+//                .waitSeconds(.5)
+//                .forward(54)
+//                .waitSeconds(.5)
+//                .addDisplacementMarker(() -> {
+//                    // rus after forward movememt
+//                    bot.moveSlideToLevel(5);
+//                })
+//                .turn(Math.toRadians(-95 * multiplier))
+//                .waitSeconds(.5)
+//                .forward(40)
+//                .waitSeconds(.5)
+//                .build();
 
         // close claws and grab position
         bot.closeClaw();
         AprilTagRecognitionPipeline.ParkingPosition parkZone = bot.pipeline.getParkingPosition(); // default go center
-        sleep(1000);
+        int backDistance = 0;
+
+        if(isLeft) {
+            if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT) {
+                backDistance = -2;
+            } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.CENTER) {
+                backDistance = 20;
+            } else {
+                backDistance = 40;
+            }
+        } else {
+            if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.LEFT) {
+                backDistance = 40;
+            } else if (parkZone == AprilTagRecognitionPipeline.ParkingPosition.CENTER) {
+                backDistance = 20;
+            } else {
+                backDistance = -12;
+            }
+        }
 
 
         // ends in front of cone stack
         drive.followTrajectorySequence(trajSeq1);
 
         double targetAngle = bot.getHeading();
-        while((bot.colorSensor.blue() < (bot.colorSensor.red() * 3)) & !isStopRequested()){
-            bot.gyroStrafe(0.2, targetAngle);
-        }
-
-        bot.moveBot(0, 0, 0, 1);
-
-        sleep(1000);
-        while(bot.getFrontDistance() >= bot.pickupFromStack && !isStopRequested()) {
-            bot.moveToConeStack();
-        }
-
-        sleep(1000);
-        bot.closeClaw();
-        sleep(1000);
-        bot.moveSlideToLevel(6);
-        // sleep(1000);
-
-         drive.followTrajectorySequence(moveback1);
-
-//        while(bot.getFrontDistance() <= 312 && !isStopRequested()){
-//            bot.moveBot(-0.2, 0, 0, 0);
-//        }
-
-        sleep(1000);
-        bot.openClaw();
-
-        Trajectory back = drive.trajectoryBuilder(new Pose2d())
-                .back(10) // move forward
-                .build();
-
-        sleep(1000);
+        int initPos = bot.frontEncoder.getCurrentPosition();
+        int finalPos = 0;
 
 
+        // line up with colored line
+        if (isRed) {
+            while ((bot.colorSensor.red() < (bot.colorSensor.blue() * 3)) & !isStopRequested()) {
+                bot.gyroStrafe(0.2 * multiplier, targetAngle);
+                telemetry.addData("Angle: ", bot.getHeading());
+                finalPos = bot.frontEncoder.getCurrentPosition();
+            }
+        } else {
+            while ((bot.colorSensor.blue() < (bot.colorSensor.red() * 3)) & !isStopRequested()) {
+                bot.gyroStrafe(0.2 * multiplier, targetAngle);
+                telemetry.addData("Angle: ", bot.getHeading());
+                finalPos = bot.frontEncoder.getCurrentPosition();
+            }
+
+            bot.moveBot(0, 0, 0, 1);
+            sleep(200);
+
+
+            // move a smidge to the
+
+            TrajectorySequence smidge = drive.trajectorySequenceBuilder(trajSeq1.end().plus(new Pose2d(
+                            multiplier * ((finalPos - initPos) / 1304), 0, 0)))
+                    .strafeRight(.5 * multiplier)
+                    .build();
+
+            drive.followTrajectorySequence(smidge);
+
+
+            // position to wall
+            int newInitPos = bot.rightEncoder.getCurrentPosition();
+            int newFinalPos = 0;
+            while (bot.getFrontDistance() >= bot.pickupFromStack && !isStopRequested()) {
+                bot.moveToConeStack();
+                newFinalPos = bot.rightEncoder.getCurrentPosition();
+            }
+
+            bot.moveBot(0, 0, 0, 1);
+
+            TrajectorySequence moveback1 = drive.trajectorySequenceBuilder(smidge.end().plus(new Pose2d(0,
+                            multiplier * ((newFinalPos - newInitPos) / 1304), 0)))
+                    .back(5)
+                    .turn(Math.toRadians(-182))
+                    .addDisplacementMarker(() -> {
+                        // Runs 1 inch into trajectory
+                        bot.moveSlideToLevel(1);
+                    })
+                    .forward(backDistance)
+                    //.turn(Math.toRadians(-180))
+                    .build();
+
+
+            bot.closeClaw();
+            sleep(500);
+            bot.moveSlideToLevel(6);
+            while (bot.slideMotor.isBusy() && !isStopRequested()) {
+                telemetry.addLine("Slide is moving");
+            }
+
+            drive.followTrajectorySequence(moveback1);
+
+            bot.openClaw();
+            bot.stop();
 
 
 //        drive.followTrajectory(traj1);
@@ -215,7 +286,7 @@ public class NEWMASTERAUTO extends LinearOpMode {
 //        drive.followTrajectory(traj2);
 //        sleep(2000);
 //        drive.followTrajectory(traj3);
-        //drive straight first, then do corrections
+            //drive straight first, then do corrections
 
 
 //        telemetry.addData("Parking: ", parkZone);
@@ -228,6 +299,6 @@ public class NEWMASTERAUTO extends LinearOpMode {
 //        }
 
 
-
+        }
     }
 }

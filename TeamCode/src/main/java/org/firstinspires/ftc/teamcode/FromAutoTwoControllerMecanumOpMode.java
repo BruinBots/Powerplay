@@ -36,12 +36,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorControllerEx;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @TeleOp(name="FROM_AUTO_TwoController", group="Iterative Opmode")
@@ -67,8 +63,8 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
     boolean isLastValofA = false;
     boolean switchToBacking = false;
 
-    boolean lastValOfUp2 = false;
-    boolean lastValOfDown2 = false;
+    boolean lastValOfA = false;
+    boolean lastValOfY = false;
 
     ElapsedTime runTime = new ElapsedTime();
 
@@ -81,10 +77,12 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
     Trajectory correctAfterCetner;
 
+    int initPos;
+
     //
     @Override
     public void init() {
-        bot = new Karen(hardwareMap);
+        bot = new Karen(hardwareMap, true);
         telemetry.addData("Status", "Initialized");
        // armPos = bot.armMotor.getCurrentPosition();
 
@@ -95,12 +93,18 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
                 .build();
 
         bot.slideMotor.setVelocityPIDFCoefficients(10, 2, 3,0);
+        initPos = bot.frontEncoder.getCurrentPosition();
     }
 
     //
     @Override
     public void init_loop() {
         //armPos = bot.armMotor.getCurrentPosition();
+        telemetry.addData("Init: ", initPos);
+        telemetry.addData("Current: ", bot.frontEncoder.getCurrentPosition());
+        telemetry.addData("Divsion ", (bot.frontEncoder.getCurrentPosition() - initPos) / 1304);
+        telemetry.addData("Inches Moved: ", bot.encoderToInches(initPos, bot.frontEncoder.getCurrentPosition()));
+        telemetry.addData("Angle: ", bot.getHeading());
         telemetry.addData("Pid: ",bot.slideMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION));
     }
 
@@ -150,10 +154,10 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         telemetry.addData("Color: ", bot.colorSensor.getNormalizedColors());
 
         // Open and close
-        if (gamepad2.right_bumper) {
+        if (gamepad2.left_bumper) {
             bot.closeClaw();
         }
-        if (gamepad2.left_bumper) {
+        if (gamepad2.right_bumper) {
             bot.openClaw();
         }
 
@@ -164,31 +168,33 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
 
         // dpad up and down steps between levels
         // dpad left and right goes from level 1 to 6
-        if(gamepad2.dpad_up && !lastValOfUp2){
+        if(gamepad2.y && !lastValOfY){
             if(slideStep < 6) {
                 slideStep += 1;
             }
             bot.setSlideToLevel(slideStep);
-        } else if(gamepad2.dpad_down && !lastValOfDown2){
+        } else if(gamepad2.a && !lastValOfA){
             if(slideStep > 1){
                 slideStep -= 1;
             }
             bot.setSlideToLevel(slideStep);
-        } else if(gamepad2.dpad_right){
+        } else if(gamepad2.dpad_up){
             slideStep = 6;
             bot.setSlideToLevel(slideStep);
-        } else if(gamepad2.dpad_left){
+        } else if(gamepad2.dpad_down){
             slideStep = 1;
             bot.setSlideToLevel(slideStep);
         }
 
-        lastValOfUp2 = gamepad2.dpad_up;
-        lastValOfDown2 = gamepad2.dpad_down;
+        lastValOfA = gamepad2.a;
+        lastValOfY = gamepad2.y;
 
 
         if(!bot.getSlideButton() && (-gamepad2.right_stick_y < 0)){
             // zeroes out the slide if the button is clicked
             bot.resetSlideMotor();
+            bot.slideMotor.setPower(0);
+            bot.targetSlidePos = 0;
         } else {
             bot.moveLinearSlide(bot.targetSlidePos);
         }
@@ -197,6 +203,12 @@ public class FromAutoTwoControllerMecanumOpMode extends OpMode {
         telemetry.addData("codeSlidePos: ", bot.targetSlidePos);
         telemetry.addData("Actual SlidePOs: ", bot.getSlidePos());
         telemetry.addData("HardStop: ", bot.getSlideButton());
+
+        telemetry.addData("leftFront: ", bot.leftFrontMotor.getPower());
+        telemetry.addData("rightFront: ", bot.rightFrontMotor.getPower());
+        telemetry.addData("leftback: ", bot.leftBackMotor.getPower());
+        telemetry.addData("rightBack: ", bot.rightBackMotor.getPower());
+
 
 
         telemetry.addData("Time: ", runTime.time());
