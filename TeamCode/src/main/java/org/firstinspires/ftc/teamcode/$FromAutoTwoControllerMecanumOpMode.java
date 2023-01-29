@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @TeleOp(name="FROM_AUTO_TwoController", group="Iterative Opmode")
-public class FromAutoTwoControllerMecanumOpMode extends OpMode {
+public class $FromAutoTwoControllerMecanumOpMode extends OpMode {
 
     // Declare OpMode members.
 

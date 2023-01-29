@@ -2,12 +2,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.AprilTagRecognitionPipeline;
 import org.firstinspires.ftc.teamcode.EOCV.SimTesterZone.BananaDetector;
 import org.firstinspires.ftc.teamcode.Karen;
@@ -32,7 +30,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
  */
 @Config
 @Autonomous(group = "measure cut twice once")
-public class NEWMASTERAUTO extends LinearOpMode {
+public class $NEWMASTERAUTO extends LinearOpMode {
 
     SampleMecanumDrive drive;
     Karen bot;

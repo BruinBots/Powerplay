@@ -168,6 +168,7 @@ public class Karen  {
     }
 
     public Karen (HardwareMap map, boolean fromAuto) {
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -206,10 +207,11 @@ public class Karen  {
         colorSensor.enableLight(true);
 
         clawServo = map.get(Servo.class, "clawServo");
+        this.closeClaw();
 
         slideMotor = map.get(DcMotorEx.class, "linearSlideMotor");
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setVelocityPIDFCoefficients(10, 2, 3,0);
 
         //left odo wheel
