@@ -16,23 +16,6 @@ public class BigBob {
     public DcMotorEx leftBackMotor;
     public DcMotorEx rightBackMotor;
 
-    public DcMotorEx linearSlideMotor;
-    public Servo clawServo;
-
-    public static final double CLAW_OPEN = 0.7;
-    public static final double CLAW_CLOSED = 0.3;
-
-    public static final double CLAW_ZERO_POSITION = 0.4;
-
-    public static final int MAX_LINEAR_SLIDE_POSITON = 2100;
-    public static final int MIN_LINEAR_SLIDE_POSITION = 10;
-
-    public static final int MEDIUM_LINEAR_SLIDE_POSITION = 1450;
-    public static final int LOW_LINEAR_SLIDE_POSITION = 900;
-
-    public static final double LINEAR_SLIDE_POWER = 0.2;
-    public static final double LINEAR_SLIDE_POWER_DOWN = 0.065;
-
     // constructor with map
     public BigBob(HardwareMap map) {
         // Drivetrain Motors
@@ -40,12 +23,6 @@ public class BigBob {
         rightFrontMotor = map.get(DcMotorEx.class, "rightFrontMotor");
         leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
-
-        linearSlideMotor = map.get(DcMotorEx.class, "linearSlide");
-        linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        clawServo = map.get(Servo.class, "clawServo");
 
         leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -85,32 +62,5 @@ public class BigBob {
         leftBackMotor.setPower(0);
         rightFrontMotor.setPower(0);
         rightBackMotor.setPower(0);
-    }
-
-    public void moveClaw(double pos) {
-        if (pos > CLAW_OPEN) {
-            pos = CLAW_OPEN;
-        }
-        else if (pos < CLAW_CLOSED) {
-            pos = CLAW_CLOSED;
-        }
-        clawServo.setPosition(pos);
-    }
-
-    public void moveLinearSlide(int ticks) {
-        if (ticks > MAX_LINEAR_SLIDE_POSITON) {
-            ticks = MAX_LINEAR_SLIDE_POSITON;
-        }
-        else if (ticks < MIN_LINEAR_SLIDE_POSITION) {
-            ticks = MIN_LINEAR_SLIDE_POSITION;
-        }
-        linearSlideMotor.setTargetPosition(ticks);
-        if (ticks > MIN_LINEAR_SLIDE_POSITION) {
-            linearSlideMotor.setPower(LINEAR_SLIDE_POWER);
-        }
-        else {
-            linearSlideMotor.setPower(LINEAR_SLIDE_POWER_DOWN);
-        }
-        linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }

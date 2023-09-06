@@ -43,9 +43,6 @@ public class MecanumOpMode extends OpMode
     double turn = 0.0;
     double strafe = 0.0;
 
-    int linearSlide = 0;
-    double clawPos = BigBob.CLAW_ZERO_POSITION;
-
     BigBob bot;
 
     //
@@ -74,55 +71,6 @@ public class MecanumOpMode extends OpMode
         turn = gamepad1.right_stick_x * -0.5;
 
         bot.moveBot(drive, turn, strafe, 0.5);
-
-        // Linear Slide Code`
-        if (gamepad1.dpad_up) {
-            linearSlide += 10;
-        }
-        else if (gamepad1.dpad_down) {
-            linearSlide -= 10;
-        }
-        else if (gamepad1.y) {
-            linearSlide = BigBob.MAX_LINEAR_SLIDE_POSITON;
-        }
-        else if (gamepad1.x) {
-            linearSlide = BigBob.MEDIUM_LINEAR_SLIDE_POSITION;
-        }
-        else if (gamepad1.b) {
-            linearSlide = BigBob.LOW_LINEAR_SLIDE_POSITION;
-        }
-        else if (gamepad1.a) {
-            linearSlide = BigBob.MIN_LINEAR_SLIDE_POSITION;
-        }
-
-        if (gamepad1.dpad_right) { // open
-            if (clawPos < BigBob.CLAW_OPEN) {
-                clawPos += 0.05;
-            }
-        }
-        else if (gamepad1.dpad_left) { // close
-            if (clawPos > BigBob.CLAW_CLOSED) {
-                clawPos -= 0.05;
-            }
-        }
-        else if (gamepad1.left_bumper) {
-            clawPos = BigBob.CLAW_OPEN;
-        }
-        else if (gamepad1.left_trigger > 0.2) {
-            clawPos = BigBob.CLAW_OPEN - (BigBob.CLAW_OPEN - BigBob.CLAW_CLOSED) * gamepad1.left_trigger;
-        }
-        else if (gamepad1.left_trigger > 0.8) {
-            clawPos = BigBob.CLAW_CLOSED;
-        }
-
-        telemetry.addData("linearSlideMotor", linearSlide);
-        telemetry.addData("linearSlideEncoder", bot.linearSlideMotor.getCurrentPosition());
-        telemetry.addData("clawServoExpected", clawPos);
-        telemetry.addData("clawServo", bot.clawServo.getPosition());
-        telemetry.update();
-
-        bot.moveClaw(clawPos);
-        bot.moveLinearSlide(linearSlide);
 
         try {
             sleep(20);
