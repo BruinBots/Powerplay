@@ -24,16 +24,16 @@ public class BigBob {
         leftBackMotor = map.get(DcMotorEx.class, "leftBackMotor");
         rightBackMotor = map.get(DcMotorEx.class, "rightBackMotor");
 
-        leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftBackMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-    public void moveBot(double drive, double rotate, double strafe, double scaleFactor) {
+    public void moveBot(double drive, double rotate, double scaleFactor) {
         double[] wheelSpeeds = new double[4];
-        wheelSpeeds[0] = drive + strafe + rotate;  // left front
-        wheelSpeeds[1] = drive - strafe - rotate;  // right front
-        wheelSpeeds[2] = drive - strafe + rotate;  // left rear
-        wheelSpeeds[3] = drive + strafe - rotate;  // right rear
+        wheelSpeeds[0] = drive - rotate;  // left front
+        wheelSpeeds[1] = drive + rotate;  // right front
+        wheelSpeeds[2] = drive - rotate;  // left rear
+        wheelSpeeds[3] = drive + rotate;  // right rear
 
         // finding the greatest power value
         double maxMagnitude = Math.max(Math.max(Math.max(wheelSpeeds[0], wheelSpeeds[1]), wheelSpeeds[2]), wheelSpeeds[3]);

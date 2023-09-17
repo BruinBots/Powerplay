@@ -35,13 +35,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Basic: TeleOp", group="Iterative Opmode")
-public class MecanumOpMode extends OpMode
+public class OmniwheelOpMode extends OpMode
 {
     // Declare OpMode members.
 
     double drive = 0.0;
     double turn = 0.0;
-    double strafe = 0.0;
 
     BigBob bot;
 
@@ -67,10 +66,9 @@ public class MecanumOpMode extends OpMode
     @Override
     public void loop() {
         drive = -gamepad1.left_stick_y * -0.5;
-        strafe = gamepad1.left_stick_x * -0.5;
         turn = gamepad1.right_stick_x * -0.5;
 
-        bot.moveBot(drive, turn, strafe, 0.5);
+        bot.moveBot(drive, turn, 0.5);
 
         try {
             sleep(20);
